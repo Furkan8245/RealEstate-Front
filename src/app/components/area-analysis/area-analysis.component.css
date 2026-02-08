@@ -1,0 +1,25 @@
+#map{
+    height: 70vh;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0, 0.1);
+}
+/* Arama kutusunu modernleştirme */
+.leaflet-control-geocoder {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  border: 1px solid #ddd !important;
+  background: white;
+  margin-top: 20px !important; /* Draw araçlarıyla çakışmaması için */
+  margin-left: 20px !important;
+}
+
+.leaflet-control-geocoder-icon {
+  border-radius: 8px !important;
+}
+
+.leaflet-control-geocoder-form input {
+  font-family: 'Inter', sans-serif;
+  padding: 8px;
+  outline: none;
+}
