@@ -1,15 +1,23 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AreaAnalysis } from '../models/areaAnalysis';
+import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+// Engin Hoca Standart Response Yapısı
+export interface SingleResponseModel<T> {
+  data: T;
+  success: boolean;
+  message: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AnalysisService {
+  apiUrl = 'https://localhost:7241/api/AreaAnalysis/';
 
-  private apiUrl = 'https://localhost:7241/api/AreaAnalysis';
-  constructor(private http:HttpClient) { }
-  calculate(analysisData:any):Observable<any>{
-    return this.http.post(`${this.apiUrl}/calculate`,analysisData);
+  constructor(private httpClient: HttpClient) {}
+
+  // Swagger'daki POST /calculate işlemi
+  calculate(payload: any): Observable<SingleResponseModel<AreaAnalysis>> {
+    return this.httpClient.post<SingleResponseModel<AreaAnalysis>>(this.apiUrl + 'calculate', payload);
   }
 }

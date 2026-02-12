@@ -1,0 +1,36 @@
+<div class="container mt-4">
+
+  <h4 class="mb-3">
+    {{ isAdmin ? "Tüm Taşınmazlar (Admin)" : "Taşınmazlarım" }}
+  </h4>
+
+  <table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+
+        <th *ngIf="isAdmin">Kullanıcı ID</th>
+
+        <th>İl</th>
+        <th>İlçe</th>
+        <th>Mahalle</th>
+        <th>Alan (m²)</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of estates">
+      <td>{{ item.realEstateId }}</td>
+      <td>{{ item.ownerId || '-' }}</td>
+      <td>{{ item.cityName || 'Bilinmiyor' }}</td>
+      <td>{{ item.districtName || 'Bilinmiyor' }}</td>
+      <td>{{ item.neighborhoodName || 'Bilinmiyor' }}</td>
+      <td>{{ item.area | number:'1.0-2' }}</td>
+      <td>{{ item.createdDate | date:'dd.MM.yyyy' }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>

@@ -1,0 +1,30 @@
+<div class="sidebar-location-group">
+  <h5 class="sidebar-title">Konum Filtrele</h5>
+  
+  <div class="filter-item">
+    <label><i class="bi bi-geo-alt"></i> Şehir</label>
+    <select [(ngModel)]="selectedCityId" (change)="onCityChange()" class="sidebar-select">
+      <option [value]="0">Tüm Şehirler</option>
+      <option *ngFor="let city of cities" [value]="city.cityId">{{city.cityName}}</option>
+    </select>
+  </div>
+
+  <div class="filter-item">
+    <label><i class="bi bi-map"></i> İlçe</label>
+    <select [(ngModel)]="selectedDistrictId" (change)="onDistrictChange()" class="sidebar-select">
+      <option [ngValue]="0">Tüm İlçeler</option>
+      <option *ngFor="let d of districts" [ngValue]="d.districtId">{{d.districtName}}</option>
+    </select>
+  </div>
+
+  <div class="filter-item">
+    <label><i class="bi bi-house-door"></i> Mahalle (Elle Yazınız)</label>
+    <input 
+      type="text" 
+      [(ngModel)]="neighborhoodNameInput" 
+      (input)="onManualNeighborhoodChange()" 
+      class="sidebar-input" 
+      placeholder="Mahalle adını giriniz..."
+    />
+  </div>
+</div>

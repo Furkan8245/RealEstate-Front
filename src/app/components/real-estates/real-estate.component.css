@@ -1,0 +1,21 @@
+.real-estate-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.table thead th {
+  border-top: none;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f8ff;
+  transition: 0.3s;
+}
+
+.badge-pill {
+  font-weight: 500;
+  font-size: 0.8rem;
+}

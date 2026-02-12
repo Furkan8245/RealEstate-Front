@@ -1,0 +1,101 @@
+<aside>
+  <p style="padding-left: 30px; font-weight: bold;">Menu</p>
+  
+      <div *ngIf="isAdmin">
+       <hr style="margin: 10px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+       <a routerLink="/users" routerLinkActive="active">
+         <i class="fa fa-users"></i> Kullanıcılar
+       </a>
+       <a routerLink="/logs" routerLinkActive="active">
+         <i class="fa fa-shield"></i> Sistem Logları
+       </a>
+    </div>
+  <nav>
+    <a *ngFor="let item of filteredMenu" [routerLink]="item.route">
+      <i class="fa {{item.icon}}"></i> {{item.label}}
+    </a>
+
+
+  </nav>
+
+  <div class="analysis-panel">
+    <div class="status-tracker mb-3 p-2 bg-dark bg-opacity-10 rounded">
+      <div class="d-flex justify-content-between small px-1">
+        <span [ngClass]="pointsCount >= 1 ? 'text-success fw-bold' : 'text-white-50'">
+          <i class="fa" [ngClass]="pointsCount >= 1 ? 'fa-check-circle' : 'fa-circle-o'"></i> A
+        </span>
+        <span [ngClass]="pointsCount >= 2 ? 'text-success fw-bold' : 'text-white-50'">
+          <i class="fa" [ngClass]="pointsCount >= 2 ? 'fa-check-circle' : 'fa-circle-o'"></i> B
+        </span>
+        <span [ngClass]="pointsCount >= 3 ? 'text-success fw-bold' : 'text-white-50'">
+          <i class="fa" [ngClass]="pointsCount >= 3 ? 'fa-check-circle' : 'fa-circle-o'"></i> C
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="showAnalysisForm" class="mb-3 p-3 bg-white text-dark rounded shadow-sm animate__animated animate__fadeIn">
+      <h6 class="small fw-bold border-bottom pb-2 mb-2">Analiz Parametreleri</h6>
+      
+      <app-location-selector (locationChanged)="handleLocationFilter($event)"></app-location-selector>
+      
+      <div *ngIf="pointsCount < 3" class="alert alert-warning py-1 px-2 mb-2" style="font-size: 10px;">
+        <i class="fa fa-exclamation-triangle"></i> Lütfen A, B ve C geometrilerini tamamlayın.
+      </div>
+      
+      <label class="extra-small text-muted">İşlem Türü:</label>
+      <select [(ngModel)]="selectedOperation" class="form-select form-select-sm mb-3" [disabled]="pointsCount < 3">
+        <option value="intersectionab">A ∩ B (Kesişim)</option>
+        <option value="intersectionba">B ∩ A (Kesişim)</option>
+        <option value="unionab">A ∪ B (Birleşim - Kaydeder)</option>
+        <option value="unionabc">A ∪ B ∪ C (Üçlü Birleşim - Kaydeder)</option>
+        <option value="intersectionabc">A ∩ B ∩ C (Üçlü Kesişim)</option>
+      </select>
+      
+      <button class="btn btn-primary btn-sm w-100 mb-2" (click)="executeAnalysis()" [disabled]="pointsCount < 3">
+        <i class="fa fa-calculator"></i> Hesapla
+      </button>
+
+      <div *ngIf="analysisResult" class="mt-2 p-2 bg-light border rounded small animate__animated animate__fadeIn">
+        <div class="text-success fw-bold" style="font-size: 11px;">Analiz Tamamlandı!</div>
+        <strong>Alan:</strong> {{ analysisResult.area | areaFormat }}
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a class="btn btn-1" (click)="toggleAnalysisForm()">
+        <i class="fa fa-cog"></i> {{ showAnalysisForm ? 'Ayarları Kapat' : 'Analiz Ayarları' }}
+      </a>
+      <a class="btn btn-2" (click)="resetMap()">
+        <i class="fa fa-refresh"></i> Sıfırla
+      </a>
+    </div>
+    
+    <div class="report-group">
+      <a class="btn btn-3" (click)="downloadExcel()">Excel</a> 
+      <a class="btn btn-4" (click)="downloadPdf()">Pdf</a> 
+    </div>
+
+    <div *ngIf="analysisResult" class="result-display-card animate__animated animate__fadeInUp">
+      <div class="result-card-header">
+        <i class="fa fa-pie-chart"></i> İşlem Özeti
+      </div>
+      <div class="result-card-body">
+        <div class="result-data-row">
+          <span class="data-label">Seçilen İşlem:</span>
+          <span class="data-value text-uppercase">{{ analysisResult.operationType }}</span>
+        </div>
+        <div class="result-data-row">
+          <span class="data-label">Hesaplanan Alan:</span>
+          <span class="data-value highlight-area">{{ analysisResult.area | areaFormat }}</span>
+        </div>
+        <div class="result-data-row" *ngIf="analysisResult.id">
+          <span class="data-label">Kayıt Numarası:</span>
+          <span class="data-value">#{{ analysisResult.id }}</span>
+        </div>
+        <div class="result-footer-note" *ngIf="analysisResult.operationType.includes('union')">
+          <i class="fa fa-database"></i> Veritabanına kaydedildi.
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>

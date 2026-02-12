@@ -1,0 +1,46 @@
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="col-md-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+      <div class="card-header bg-success text-white text-center py-4">
+        <h4 class="mb-0"><i class="bi bi-person-plus"></i> Kayıt Ol</h4>
+      </div>
+      <div class="card-body p-4">
+        <form [formGroup]="registerForm" (ngSubmit)="register()">
+          
+          <div class="row mb-3">
+            <div class="col"><input type="text" formControlName="firstName" class="form-control" placeholder="Ad"></div>
+            <div class="col"><input type="text" formControlName="lastName" class="form-control" placeholder="Soyad"></div>
+          </div>
+
+          <div class="mb-3">
+            <input type="email" formControlName="email" class="form-control" placeholder="E-posta">
+          </div>
+
+          <div class="mb-3 position-relative">
+            <input type="password" formControlName="password" class="form-control" placeholder="Şifre"
+              [ngClass]="{'is-valid': registerForm.get('password')?.valid, 'is-invalid': registerForm.get('password')?.touched && registerForm.get('password')?.invalid}">
+            <span class="position-absolute top-50 end-0 translate-middle-y me-3">
+              <i *ngIf="registerForm.get('password')?.valid" class="bi bi-check-circle-fill text-success"></i>
+              <i *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="bi bi-x-circle-fill text-danger"></i>
+            </span>
+          </div>
+
+          <div class="mb-4 position-relative">
+            <input type="password" formControlName="confirmPassword" class="form-control" placeholder="Şifre Tekrar"
+              [ngClass]="{'is-valid': !registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.value != '', 
+                          'is-invalid': registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched}">
+            <span class="position-absolute top-50 end-0 translate-middle-y me-3">
+              <i *ngIf="!registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.value != ''" class="bi bi-check-circle-fill text-success"></i>
+              <i *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="bi bi-exclamation-triangle-fill text-danger"></i>
+            </span>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" [disabled]="registerForm.invalid" class="btn btn-success btn-lg">Kayıt Ol</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-center"><a routerLink="/login" class="text-success text-decoration-none">Giriş Yap</a></div>
+    </div>
+  </div>
+</div>

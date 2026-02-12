@@ -1,59 +1,6 @@
-<div class="container-fluid mt-4">
-  <div class="row">
-    <div class="col-md-3">
-      <div class="card p-3 shadow-sm border-primary">
-        <h5 class="text-primary"><i class="bi bi-gear-fill"></i> Analiz Paneli</h5>
-        <p class="text-muted small"> Uzamsal Operasyonlar</p>
-        <hr>
-        
-        <div class="mb-3">
-          <label class="form-label fw-bold">1. Geometri Durumu:</label>
-          <div class="alert" [ngClass]="points.length < 3 ? 'alert-warning' : 'alert-success'">
-            <i class="bi" [ngClass]="points.length < 3 ? 'bi-exclamation-triangle' : 'bi-check-circle'"></i>
-            {{ points.length }} / 3 Poligon Çizildi
-          </div>
-          <small class="text-muted" *ngIf="points.length < 3">Lütfen A, B ve C alanlarını haritaya çizin.</small>
-        </div>
+<app-sidebar (locationChanged)="onLocationChanged($event)"></app-sidebar>
 
-        <div class="mb-3">
-          <label class="form-label fw-bold">2. İşlem Seçin:</label>
-          <select [(ngModel)]="selectedOperation" class="form-select border-primary">
-            <option value="intersectionab">A ∩ B (Kesişim)</option>
-            <option value="intersectionba">B ∩ A (Kesişim)</option>
-            <option value="unionab">A ∪ B (Birleşim - Kaydedilir)</option>
-            <option value="unionabc">A ∪ B ∪ C (Üçlü Birleşim - Kaydedilir)</option>
-          </select>
-        </div>
-
-        <div class="d-grid gap-2">
-          <button class="btn btn-primary" [disabled]="points.length < 3" (click)="sendToAnalysis()">
-            <i class="bi bi-play-fill"></i> Analizi Başlat
-          </button>
-          
-          <button class="btn btn-outline-danger btn-sm" (click)="resetMap()">
-            <i class="bi bi-arrow-counterclockwise"></i> Haritayı Sıfırla
-          </button>
-        </div>
-
-        <div *ngIf="analysisResult" class="mt-4 p-3 bg-light border-start border-success border-4 rounded shadow-sm">
-          <h6 class="text-success"><i class="bi bi-info-circle"></i> Analiz Sonucu</h6>
-          <hr class="my-2">
-          <p class="mb-1"><b>İşlem:</b> {{ analysisResult.name }}</p>
-          <p class="mb-1"><b>Yüzey Alanı:</b> <span class="badge bg-success">{{ analysisResult.area | number:'1.0-2' }} m²</span></p>.-
-          <p class="small text-muted mt-2" *ngIf="analysisResult.id">
-            <i class="bi bi-database-check"></i> Veritabanına kaydedildi (ID: {{ analysisResult.id }})
-          </p>
-          <p class="small text-muted mt-2">
-    <i class="bi bi-info-circle-fill"></i> {{ analysisResult.description || 'Analiz başarıyla tamamlandı.' }}
-  </p>
+<div class="main-content">
+  <div id="map" style="height: 100vh; width: 100%;"></div>
 </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="col-md-9">
-      <div class="card shadow-sm">
-        <div id="map" style="height: 750px; border-radius: 8px;"></div>
-      </div>
-    </div>
-  </div>
