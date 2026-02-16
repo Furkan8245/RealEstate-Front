@@ -11,16 +11,17 @@ const authService = inject(AuthService);
     return false;
   }
 
-  const userRoles = authService.getUserRoles();
-  const adminRoutes = ["users", "logs"];
+  const url = state.url.toLowerCase();
+  const isAdminRoute = url.includes('admin') || url.includes('users');
 
-  const isAdminRoute = adminRoutes.some((path) =>
-    state.url.includes(path)
-  );
+ 
 
-  if (isAdminRoute && !userRoles.includes("Admin")) {
+  if (isAdminRoute && authService.isAdmin()) {
+   
+    console.warn("Yetkisiz erişim:Admin değilsiniz.");
     router.navigate(["/real-estates"]);
     return false;
+   
   }
 
   return true;

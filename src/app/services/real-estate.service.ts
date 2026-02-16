@@ -41,10 +41,13 @@ export class RealEstateService {
   saveRealEstate(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/add`, data);
   }
+  updateRealEstate(data:any):Observable<any>{
+    return this.http.put(`${this.apiUrl}/update`,data);
+  }
 
   deleteRealEstate(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete`, {
-      body: { realEstateId: id },
+    return this.http.delete(`${this.apiUrl}/delete?realEstateId=${id}`, {
+      body: { id: id },
     });
   }
 }

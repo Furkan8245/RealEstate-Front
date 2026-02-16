@@ -1,0 +1,45 @@
+<div class="modal" [ngClass]="{'show':isOpen}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Taşınmazı Düzenle
+                </h5>
+                <button type="button" class="btn-close" (click)="close()"></button>
+            </div>
+            <div class="modal-body">
+            <form #editForm="ngForm">
+                <div class="mb-2">
+                    <label class="form-label">İl</label>
+                    <input type="text" class="form-control" [(ngModel)]="dataEstate.cityName" name="cityName">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">İlçe</label>
+                    <input type="text" class="form-control" [(ngModel)]="dataEstate.districtName" name="districtName">
+                </div>
+
+                 <div class="mb-2">
+                    <label class="form-label">Mahalle</label>
+                    <input type="text" class="form-control" [(ngModel)]="dataEstate.neighborhoodName" name="neighborhoodName">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">Alan (m²)</label>
+                    <input type="number" class="form-control" [(ngModel)]="dataEstate.area" name="area">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Açık Adres</label>
+                    <textarea class="form-control" [(ngModel)]="dataEstate.address" name="address" rows="2"></textarea>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="close()">Vazgeç</button>
+                <button class="btn btn-primary" (click)="save()">Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+</div>

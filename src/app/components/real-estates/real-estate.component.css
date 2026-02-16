@@ -1,21 +1,232 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .real-estate-container {
-  background-color: #f8f9fa;
+  background-color: #f8fafc;
   min-height: 100vh;
+  padding: 20px;
+  color: #334155;
 }
 
-.table thead th {
-  border-top: none;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.table tbody tr:hover {
-  background-color: #f1f8ff;
-  transition: 0.3s;
+/* HEADER */
+h4 {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border-radius: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.2);
 }
 
+/* CONTROLS */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* SEARCH BOX */
+.search-box {
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+.search-box input {
+  width: 28%;
+  max-width: 360px;
+  padding: 14px 20px 14px 46px;
+  border: 1px solid #4085e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background-color: #f8fafc;
+}
+.search-icon{
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.modal-dialog{
+  margin-top: 10%;
+    z-index: 10002;
+}
+.modal-backdrop.show {
+    z-index: 10000;
+}
+.modal-content {
+    animation: slideIn 0.3s ease-out;
+}
+.app-delete-confirm-modal{
+  position: relative;
+  z-index: 9999;
+}
+.action-buttons{
+  display: flex !important;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-start;
+  align-items: center;
+
+}
+.modal.show {
+    display: block !important;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+}
+@keyframes slideIn{
+  from {transform: translateY(-30px); opacity: 0;}
+  to{transform: translateY(0); opacity: 1;}
+}
+td:last-child{
+  text-align: left;
+}
+.icon-btnEdit,
+.icon-btnDelete{
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  transition: 0.2s;
+  justify-content: center;
+}
+.icon-btnEdit:hover{
+  background-color: rgba(79, 70, 229, 0.15);
+}
+.icon-btnDelete:hover{
+  background-color: rgba(239, 68, 68, 0.15);
+}
+.editBtn,
+.deleteBtn{
+  width: 22px;
+  height: 22px;
+  display: block;
+  object-fit: contain;
+}
+.search-box input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  background-color: white;
+}
+
+/* SEARCH ICON */
+.search-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+/* TABLE CONTAINER */
+.table-container {
+  background-color: white;
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+/* TABLE HEADER */
+thead {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: white;
+}
+
+thead th {
+  padding: 18px 15px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: left;
+}
+
+/* TABLE BODY */
+tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+td {
+  padding: 16px 15px;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+/* BADGES */
 .badge-pill {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* ✅ RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+  h4 {
+    font-size: 1.4rem;
+    padding: 15px;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 30px;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
 }

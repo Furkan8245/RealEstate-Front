@@ -60,9 +60,9 @@ export class AreaAnalysisComponent implements OnInit {
   checkAdminStatus() {
     const roles = this.authService.getUserRoles();
     if (Array.isArray(roles)) {
-      this.isAdmin = roles.includes('Admin');
+      this.isAdmin = roles.includes('admin');
     } else {
-      this.isAdmin = roles == 'Admin';
+      this.isAdmin = roles == 'admin';
     }
   }
 

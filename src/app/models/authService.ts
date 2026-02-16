@@ -73,6 +73,7 @@ export class AuthService {
     }
   }
   isAdmin():boolean{
-    return this.getUserRoles().includes("Admin");
+    const roles=this.getUserRoles();
+    return roles.some(role=>role.toLowerCase()==='admin');
   }
 }

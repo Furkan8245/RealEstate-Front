@@ -12,11 +12,12 @@ import { AreaFormatPipe } from "../../pipes/area.pipe";
 import { LocationSelectorComponent } from "../location/location-selector.component";
 import { jwtDecode } from "jwt-decode";
 import { RealEstateService } from "../../services/real-estate.service";
+import { LogoutButtonComponent } from "../logout-button/logout-button.component";
 
 @Component({
   selector: "app-sidebar",
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, AreaFormatPipe, LocationSelectorComponent],
+  imports: [CommonModule, RouterModule, FormsModule, AreaFormatPipe, LocationSelectorComponent,LogoutButtonComponent],
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.css"],
 })
@@ -26,6 +27,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { label: "Taşınmazlar", icon: "fa-user-o", route: "/real-estates", roles: ["Admin", "User"] },
     { label: "Kullanıcı Türleri", icon: "fa-clone", route: "/user-types", roles: ["Admin"] },
     { label: "Operasyon Türleri", icon: "fa-star-o", route: "/ops", roles: ["Admin"] },
+    {label: "Sistem Logları" , icon:"fa-history" , route:"/audit-log",roles:["Admin"]},
   ];
 
   isAdmin:boolean=false;

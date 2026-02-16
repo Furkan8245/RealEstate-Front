@@ -1,0 +1,19 @@
+.table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+code {
+  color: #d63384;
+  word-wrap: break-word;
+}
+
+.card {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.badge {
+  font-weight: 500;
+  text-transform: uppercase;
+}

@@ -1,0 +1,28 @@
+.modal.show {
+    background: rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+.modal-content {
+    animation: slideIn 0.3s ease-out;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.bg-light-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.record-details {
+    border-left: 4px solid #dc3545;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.btn-close-white {
+    filter: brightness(0) invert(1);
+}

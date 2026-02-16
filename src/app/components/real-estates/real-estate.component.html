@@ -1,36 +1,81 @@
-<div class="container mt-4">
+<div class="real-estate-container">
+  <div class="container mt-4">
 
-  <h4 class="mb-3">
-    {{ isAdmin ? "Tüm Taşınmazlar (Admin)" : "Taşınmazlarım" }}
-  </h4>
+    <h4>
+      {{ isAdmin ? "Tüm Taşınmazlar (Admin)" : "Taşınmazlarım" }}
+    </h4>
+    <div class="controls">
+    <div class="search-box">
+      <img src="..\assets\icons\search-symbol.png" class="search-icon">
+    
+    <input
+      type="text"
+      placeholder="Tabloda ara..."
+      [(ngModel)]="searchText"
+      (input)="onSearchChange()"
+    />
+  </div>
+</div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th *ngIf="isAdmin">Kullanıcı ID</th>
+            <th>İl</th>
+            <th>İlçe</th>
+            <th>Mahalle</th>
+            <th>Alan (m²)</th>
+            <th>Tarih</th>
+            <th>İşlemler</th>
 
-  <table class="table table-bordered table-hover shadow-sm">
-    <thead class="table-dark">
-      <tr>
-        <th>ID</th>
+          </tr>
+        </thead>
 
-        <th *ngIf="isAdmin">Kullanıcı ID</th>
+        <tbody>
+          <tr *ngFor="let item of estates">
+            <td>{{ item.realEstateId }}</td>
 
-        <th>İl</th>
-        <th>İlçe</th>
-        <th>Mahalle</th>
-        <th>Alan (m²)</th>
-        <th>Tarih</th>
-        <th>İşlem</th>
-      </tr>
-    </thead>
+            <td *ngIf="isAdmin">
+              {{ item.userId }}
+            </td>
 
-    <tbody>
-      <tr *ngFor="let item of estates">
-      <td>{{ item.realEstateId }}</td>
-      <td>{{ item.ownerId || '-' }}</td>
-      <td>{{ item.cityName || 'Bilinmiyor' }}</td>
-      <td>{{ item.districtName || 'Bilinmiyor' }}</td>
-      <td>{{ item.neighborhoodName || 'Bilinmiyor' }}</td>
-      <td>{{ item.area | number:'1.0-2' }}</td>
-      <td>{{ item.createdDate | date:'dd.MM.yyyy' }}</td>
-    </tr>
-    </tbody>
-  </table>
+            <td>{{ item.cityName || "Bilinmiyor" }}</td>
+            <td>{{ item.districtName || "Bilinmiyor" }}</td>
+            <td>{{ item.neighborhoodName || "Bilinmiyor" }}</td>
 
+            <td>{{ item.area | number : "1.0-2" }}</td>
+            <td>{{ item.createdDate | date : "dd.MM.yyyy" }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-btnEdit"  title="Güncelle" (click)="openEditModal(item)">
+                <img src="\assets\icons\pencil.png" class="editBtn">
+                </button>
+
+                <button class="icon-btnDelete" (click)="openDeleteModal(item)">
+                  <img src="\assets\icons\trash.png" class="deleteBtn">
+                </button>
+                
+              </div>
+              
+            </td> 
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <app-delete-confirm-modal 
+    [isOpen]="isDeleteModalOpen"
+    [itemDetails]="selectedEstateForDelete"
+    (onConfirm)="confirmDelete()"
+   (onClose)="isDeleteModalOpen=false">
+  </app-delete-confirm-modal>
+
+  <app-edit-real-estate-modal
+  *ngIf="selectedEstateForEdit"
+    [isOpen]="isEditModalOpen"
+    [dataEstate]="selectedEstateForEdit"
+    (onSave)="confirmEdit($event)"
+    (onClose)="closeEditModal()">
+  </app-edit-real-estate-modal>
 </div>

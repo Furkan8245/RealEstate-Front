@@ -13,8 +13,9 @@ export const routes: Routes = [
   { path: "analysis", component: AreaAnalysisComponent, canActivate: [authGuard] },
   { path: "real-estates", component: RealEstateListComponent, canActivate: [authGuard] },
   { path: "users", component: UserListComponent, canActivate: [authGuard] },
-    { path: 'admin/logs', component: AuditLogComponent, canActivate: [authGuard] },
+  { path: 'audit-log', component: AuditLogComponent, canActivate: [authGuard] },
   { path: "", redirectTo: "login", pathMatch: "full" },
   { path: "**", redirectTo: "login", pathMatch: "full" },
+ 
 
 ];
