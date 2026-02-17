@@ -10,6 +10,7 @@ import { MapInteractionService } from '../../services/map-interaction.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { RealEstateService } from '../../services/real-estate.service';
 
+
 @Component({
   selector: 'app-area-analysis',
   standalone: true,

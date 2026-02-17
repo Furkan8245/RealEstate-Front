@@ -7,13 +7,15 @@ import { MapInteractionService } from "../../services/map-interaction.service";
 import { DeleteConfirmModalComponent } from "../delete-confirm-modal/delete-confirm-modal.component";
 import { EditRealEstateModalComponent } from "../edit-real-estate-modal/edit-real-estate-modal.component";
 import { RealEstateUpdateDto } from "../../models/real-estate-update.dto";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-real-estate-list",
   templateUrl: "./real-estate.component.html",
   styleUrls: ["./real-estate.component.css"],
   standalone: true,
-  imports: [CommonModule, FormsModule,DeleteConfirmModalComponent,EditRealEstateModalComponent],
+  imports: [CommonModule, FormsModule,DeleteConfirmModalComponent,EditRealEstateModalComponent,EmptyStateComponent],
 })
 export class RealEstateListComponent implements OnInit {
   estates: any[] = [];
@@ -35,7 +37,8 @@ export class RealEstateListComponent implements OnInit {
   constructor(
     private reService: RealEstateService,
     private authService: AuthService,
-    private mapService: MapInteractionService
+    private mapService: MapInteractionService,
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -165,6 +168,9 @@ export class RealEstateListComponent implements OnInit {
     } catch (error) {
       console.error("Search error:", error);
     }
+  }
+   navigateToAnalysis():void{
+    this.router.navigate(['/analysis']);
   }
 
   toggleSelectAll(): void {

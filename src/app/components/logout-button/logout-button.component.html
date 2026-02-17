@@ -2,7 +2,7 @@
         [class.clicked]="isClicked" 
         [class.door-slammed]="isDoorSlammed" 
         [class.falling]="isFalling"
-        [ngStyle]="logoutButtonStates[currentState]"
+        [ngStyle]="logoutButtonState[currentState]"
         (mouseenter)="onMouseEnter()" 
         (mouseleave)="onMouseLeave()" 
         (click)="startAnimation()">

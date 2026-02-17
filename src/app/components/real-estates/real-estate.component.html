@@ -78,4 +78,13 @@
     (onSave)="confirmEdit($event)"
     (onClose)="closeEditModal()">
   </app-edit-real-estate-modal>
+
+  <app-empty-state
+  *ngIf="estates.length === 0 && searchText"
+  [title]="'TAŞINMAZ KAYDI YOK'"
+  [message]="'Sistemde henüz taşınmazınız bulunmuyor. Analiz yaparak yeni bir taşınmaz eklemek ister misiniz?'"
+  [icon]="'fa-map-marked-alt'"
+  [buttonText]="'ANALİZ SAYFASINA GİT'"
+  (actionClicked)="navigateToAnalysis()">
+  </app-empty-state>
 </div>

@@ -1,0 +1,18 @@
+<div class="empty-state-container animate__animated animate__fadeIn">
+  <div class="scanner-effect"></div>
+  
+  <div class="inner-content">
+    <div class="cyber-icon-wrapper">
+      <i class="fa {{ icon }}"></i>
+    </div>
+    
+    <h3 class="cyber-title">{{ title }}</h3>
+    <p class="cyber-message">{{ message }}</p>
+
+    <button *ngIf="showButton" (click)="onBtnClick()" class="cyber-btn">
+      <span class="btn-content">
+        <i class="fa fa-plus"></i> {{ buttonText }}
+      </span>
+    </button>
+  </div>
+</div>

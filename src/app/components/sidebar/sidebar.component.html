@@ -1,6 +1,4 @@
 <aside>
-  <p style="padding-left: 30px; font-weight: bold;">Menu</p>
-  
       <div *ngIf="isAdmin">
        <hr style="margin: 10px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
        <a routerLink="/users" routerLinkActive="active">
@@ -14,10 +12,7 @@
     <a *ngFor="let item of filteredMenu" [routerLink]="item.route">
       <i class="fa {{item.icon}}"></i> {{item.label}}
     </a>
-
-
   </nav>
-
   <div class="analysis-panel">
     <div class="status-tracker mb-3 p-2 bg-dark bg-opacity-10 rounded">
       <div class="d-flex justify-content-between small px-1">
@@ -60,7 +55,6 @@
         <strong>Alan:</strong> {{ analysisResult.area | areaFormat }}
       </div>
     </div>
-
     <div class="btn-group">
       <a class="btn btn-1" (click)="toggleAnalysisForm()">
         <i class="fa fa-cog"></i> {{ showAnalysisForm ? 'Ayarları Kapat' : 'Analiz Ayarları' }}
@@ -69,12 +63,10 @@
         <i class="fa fa-refresh"></i> Sıfırla
       </a>
     </div>
-    
     <div class="report-group">
       <a class="btn btn-3" (click)="downloadExcel()">Excel</a> 
       <a class="btn btn-4" (click)="downloadPdf()">Pdf</a> 
     </div>
-
     <div *ngIf="analysisResult" class="result-display-card animate__animated animate__fadeInUp">
       <div class="result-card-header">
         <i class="fa fa-pie-chart"></i> İşlem Özeti
@@ -97,9 +89,7 @@
         </div>
       </div>
     </div>
-    
   </div>
-
     <div class="sidebar-footer">
     <app-logout-button></app-logout-button>
   </div>
