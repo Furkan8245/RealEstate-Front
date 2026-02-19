@@ -16,7 +16,7 @@
                 </div>
                 
                 <div class="record-details mt-3 p-3 bg-light rounded" *ngIf="itemDetails">
-                    <p class="mb-1"><strong>Konum:</strong> {{itemDetails.location}}</p>
+                    <p class="mb-1"><strong>Kayıt:</strong> {{itemDetails.name || itemDetails.location}}</p>
                     <p class="mb-0 text-muted small"><strong>ID:</strong> #{{itemDetails.id}}</p>
                 </div>
             </div>

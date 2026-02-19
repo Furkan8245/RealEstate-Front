@@ -129,6 +129,26 @@ td:last-child{
   display: block;
   object-fit: contain;
 }
+/* Empty state'in tablo yerine geçtiğinde düzgün durması için */
+app-empty-state {
+  display: block;
+  width: 100%;
+  margin-top: 30px;
+}
+
+/* Kapsayıcının arka planının beyaz kalmasını sağla */
+.real-estate-container {
+  background-color: #f8fafc; /* Veya projenin ana rengi */
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Arama kutusunun genişliğini biraz daha uyumlu yapalım */
+.search-box input {
+  width: 100%; /* Mobil uyum için */
+  max-width: 400px;
+}
 .search-box input:focus {
   outline: none;
   border-color: #4f46e5;
