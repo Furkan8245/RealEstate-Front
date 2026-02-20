@@ -74,6 +74,18 @@
 
   </div>
 
-  <app-delete-confirm-modal ...></app-delete-confirm-modal>
-  <app-edit-real-estate-modal ...></app-edit-real-estate-modal>
+  <app-delete-confirm-modal 
+  [isOpen]="isDeleteModalOpen"
+  [itemDetails]="selectedEstateForDelete"
+  (onConfirm)="confirmDelete()"
+  (onClose)="isDeleteModalOpen=false">
+
+  </app-delete-confirm-modal>
+  <app-edit-real-estate-modal
+  *ngIf="selectedEstateForEdit"
+  [isOpen]="isEditModalOpen"
+  [dataEstate]="selectedEstateForEdit"
+  (onSave)="confirmEdit($event)"
+  (onClose)="closeEditModal()">
+</app-edit-real-estate-modal>
 </div>

@@ -64,6 +64,7 @@ export class RealEstateListComponent implements OnInit {
   }
 
   confirmDelete():void {
+    alert("Giden ID: " + this.selectedEstateForDelete?.id);
     if (!this.selectedEstateForDelete) return;
     
     const id=this.selectedEstateForDelete.id;
