@@ -50,6 +50,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   selectedCityId:number=0;
   selectedDistrictId:number=0;
   selectedNeighborhoodId:number=0;
+  selectedLocationNames:any={cityName:'',districtName:'',neighborhoodName:''};
 
   constructor(
     private authService: AuthService,
@@ -80,11 +81,26 @@ export class SidebarComponent implements OnInit, OnDestroy {
       error:()=>alert("Şehirler bulunamadı.")
     });
   }
+  handleLocationChanged(event: any) {
+    console.log("Sidebar veriyi teslim aldı:", event);
+
+    this.selectedCityId = event.cityId;
+    this.selectedDistrictId = event.districtId;
+    this.selectedNeighborhoodId = event.neighborhoodId;
+
+    this.selectedLocationNames =  {
+      cityName:event.cityName || this.selectedLocationNames.cityName,
+      districtName:event.districtName || this.selectedLocationNames.districtName,
+      neighborhoodName:event.neighborhoodName || this.selectedLocationNames.neighborhoodName
+    };
+    this.currentLocation={...event, ...this.selectedLocationNames};
+    this.mapService.updateLocation(this.currentLocation);
+    this.locationChanged.emit(this.currentLocation);
+
+  }
 
   handleLocationFilter(location: any): void {
-    this.currentLocation = location;
-    console.log("Seçilen Konum:", this.currentLocation);
-    this.locationChanged.emit(location);
+    this.handleLocationChanged(location);
     this.mapService.setLocationFilter(location);
   }
 
@@ -107,6 +123,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.analysisResult = response;
     });
   }
+  
 
   toggleAnalysisForm(): void {
     if (!this.showAnalysisForm && this.pointsCount < 3) {
@@ -115,6 +132,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
     this.showAnalysisForm = !this.showAnalysisForm;
   }
+
+
 
   executeAnalysis(): void {
     if (this.pointsCount < 3) {

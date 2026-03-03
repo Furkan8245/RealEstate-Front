@@ -16,7 +16,7 @@ const authService = inject(AuthService);
 
  
 
-  if (isAdminRoute && authService.isAdmin()) {
+  if (isAdminRoute && !authService.isAdmin()) {
    
     console.warn("Yetkisiz erişim:Admin değilsiniz.");
     router.navigate(["/real-estates"]);

@@ -67,6 +67,16 @@ export class AreaAnalysisComponent implements OnInit {
     }
   }
 
+  onSidebarLocationChanged(event:any){
+    console.log("Sidebar'dan gelen veri yakalandı:",event);
+    this.selectedCityId= event.cityId;
+    this.selectedLocationNames={
+      cityName:event.cityName,
+      districtName:event.districtName,
+      neighborhoodName:event.neighborhoodName
+    };
+  }
+
   private initMap() {
     this.map = L.map('map').setView([39.9334, 32.8597], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -187,17 +197,7 @@ export class AreaAnalysisComponent implements OnInit {
       this.map.fitBounds(bounds);
     }
   }
-  onLocationChanged(event: any) {
-  console.log("AreaAnalysis veriyi teslim aldı:", event);
-  this.selectedCityId = event.cityId;
-  this.selectedDistrictId = event.districtId;
-  this.selectedNeighborhoodId = event.neighborhoodId;
-  this.selectedLocationNames = {
-    cityName: event.cityName,
-    districtName: event.districtName,
-    neighborhoodName: event.neighborhoodName
-  };
-}
+
 
   resetMap() {
     this.drawnItems.clearLayers();

@@ -31,7 +31,7 @@
     <div *ngIf="showAnalysisForm" class="mb-3 p-3 bg-white text-dark rounded shadow-sm animate__animated animate__fadeIn">
       <h6 class="small fw-bold border-bottom pb-2 mb-2">Analiz Parametreleri</h6>
       
-      <app-location-selector (locationChanged)="handleLocationFilter($event)"></app-location-selector>
+      <app-location-selector (locationChanged)="handleLocationChanged($event)"></app-location-selector>
       
       <div *ngIf="pointsCount < 3" class="alert alert-warning py-1 px-2 mb-2" style="font-size: 10px;">
         <i class="fa fa-exclamation-triangle"></i> Lütfen A, B ve C geometrilerini tamamlayın.

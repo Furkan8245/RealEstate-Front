@@ -7,6 +7,8 @@ export class MapInteractionService {
   private pointsCountSource = new BehaviorSubject<number>(0);
   pointsCount$ = this.pointsCountSource.asObservable();
 
+  private locationSubject = new BehaviorSubject<any>(null);
+  location$ = this.locationSubject.asObservable();
 
   private analysisSource = new Subject<string>();
   analysisRequest$ = this.analysisSource.asObservable();
@@ -23,7 +25,9 @@ export class MapInteractionService {
   updatePointsCount(count: number) {
     this.pointsCountSource.next(count);
   }
-
+  updateLocation(location:any){
+    this.locationSubject.next(location);
+  }
   sendAnalysisRequest(operation: string) {
     this.analysisSource.next(operation);
   }

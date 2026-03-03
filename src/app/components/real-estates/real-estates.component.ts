@@ -9,13 +9,14 @@ import { EditRealEstateModalComponent } from "../edit-real-estate-modal/edit-rea
 import { RealEstateUpdateDto } from "../../models/real-estate-update.dto";
 import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
 import { Router } from "@angular/router";
+import { AnimatedBgComponent } from "../../shared/components/animated-bg/animated-bg.component";
 
 @Component({
   selector: "app-real-estate-list",
   templateUrl: "./real-estate.component.html",
   styleUrls: ["./real-estate.component.css"],
   standalone: true,
-  imports: [CommonModule, FormsModule,DeleteConfirmModalComponent,EditRealEstateModalComponent,EmptyStateComponent],
+  imports: [CommonModule, FormsModule, DeleteConfirmModalComponent, EditRealEstateModalComponent, EmptyStateComponent, AnimatedBgComponent,AnimatedBgComponent],
 })
 export class RealEstateListComponent implements OnInit {
   estates: any[] = [];

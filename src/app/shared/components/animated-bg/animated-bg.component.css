@@ -1,0 +1,46 @@
+.bg-wrapper{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('/assets/images/rems-bg.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -1;
+    overflow: hidden;
+    animation: backgroundSlowPan 20s infinite alternate ease-in-out;
+
+}
+.animated-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(248, 250, 252, 0.1) 0%, rgba(15, 23, 42, 0.4) 100%);
+}
+@keyframes backgroundSlowPan{
+    0%{transform: scale(1.0);}
+    100%{transform: scale(1.1) translateX(-10px);}
+}
+.blob{
+    position: absolute;
+    width: 400px; height: 400px;
+    background: rgba(79, 70, 229, 0.1);
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: -1;
+}
+.blob-1{
+    top: -100px; right: -100px;
+    animation: moveBlob1 15s infinite alternate;
+}
+.blob-2{
+    bottom: -150px;
+    background: rgba(0, 242, 255, 0.1);
+    animation: moveBlob1 20s infinite alternate-reverse;
+}
+@keyframes moveBlob1{
+    0%{transform: translate(0,0);}
+    100% {transform: translate(50px,100px);}
+}
