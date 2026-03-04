@@ -147,6 +147,7 @@ export class AreaAnalysisComponent implements OnInit {
 
   private saveToDatabase(result: any) {
   const userId = this.authService.getUserId();
+  const userRole = this.authService.getUserRole();
   if (!userId || !result.geometry || !result.geometry.coordinates) return;
 
   const firstCoordinates = result.geometry.type === 'Point'
@@ -169,17 +170,18 @@ export class AreaAnalysisComponent implements OnInit {
     ownerId: Number(userId),
     coordinateX: firstCoordinates[0],
     coordinateY: firstCoordinates[1],
+    description : `${userRole.toUpperCase()} tarafından yapılan analiz`,
   };
-
-  console.log("Veritabanına giden paket:", savePayload);
-
   this.reService.saveRealEstate(savePayload).subscribe({
     next: (res) => {
-      console.log("Veritabanına başarıyla kaydedildi!");
+      const message = userRole === 'Admin'
+      ? "Yönetici kaydı onaylandı ve sisteme işlendi."
+      : "Analiz sonucunuz başarıyla profilinize kaydedildi.";
+      console.log(message);
     },
     error: (err) => {
-      console.error("Veritabanı kayıt hatası:", err);
-      alert("Kayıt sırasında hata oluştu. Lütfen geçerli bir konum seçtiğinizden emin olun.");
+      if(err.status === 403) alert("Bu bölgeye kayıt yapma yetkiniz yok!");
+      else alert("Kayıt Hatası:" + err.message);
     }
   });
 }
