@@ -1,7 +1,7 @@
 aside {
   color: #fff;
   width: 250px;
-  padding-left: 20px;
+  /* padding-left: 20px; */
   height: 100vh;
   padding: 20px 10px;
   display: flex;
@@ -10,7 +10,27 @@ aside {
   border-top-right-radius: 80px;
   position: fixed;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
 }
+aside::-webkit-scrollbar{
+  width: 6px;
+}
+aside::-webkit-scrollbar-track{
+  background: :rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+aside::-webkit-scrollbar-thumb{
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+aside::-webkit-scrollbar-thumb:hover{
+  background: rgba(255, 255, 255, 0.4);
+}
+
 .sidebar-footer{
   margin-top: auto;
   padding-bottom: 20px;

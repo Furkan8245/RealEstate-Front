@@ -1,33 +1,46 @@
-<div class="row g-3 location-selector-container">
-  <div class="col-md-4">
-    <label class="form-label fw-bold">Şehir</label>
-    <select class="form-select custom-select" 
-            [(ngModel)]="selectedCityId" 
-            (change)="onCityChange()">
-      <option [value]="0" disabled selected>İl Seçiniz...</option>
-      <option *ngFor="let c of cities" [value]="c.id">{{c.name}}</option>
-    </select>
-  </div>
+<div class="location-card">
+  <h5 class="card-title"><i class="bi bi-geo-alt-fill me-2"></i>Adres Bilgileri</h5>
+  
+  <div class="selection-group">
+    <div class="mb-3">
+      <label class="form-label">Şehir</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-building"></i></span>
+        <select class="form-select custom-select" 
+                [(ngModel)]="selectedCityId" 
+                (change)="onCityChange()">
+          <option [value]="0" disabled selected>İl Seçiniz...</option>
+          <option *ngFor="let c of cities" [value]="c.id">{{c.name}}</option>
+        </select>
+      </div>
+    </div>
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">İlçe</label>
-    <select class="form-select custom-select" 
-            [(ngModel)]="selectedDistrictId" 
-            (change)="onDistrictChange()"
-            [disabled]="!districts.length">
-      <option [value]="0" disabled selected>İlçe Seçiniz...</option>
-      <option *ngFor="let d of districts" [value]="d.id">{{d.name}}</option>
-    </select>
-  </div>
+    <div class="mb-3">
+      <label class="form-label">İlçe</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-map"></i></span>
+        <select class="form-select custom-select" 
+                [(ngModel)]="selectedDistrictId" 
+                (change)="onDistrictChange()"
+                [disabled]="!districts.length">
+          <option [value]="0" disabled selected>İlçe Seçiniz...</option>
+          <option *ngFor="let d of districts" [value]="d.id">{{d.name}}</option>
+        </select>
+      </div>
+    </div>
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">Mahalle</label>
-    <select class="form-select custom-select" 
-            [(ngModel)]="selectedNeighborhoodId" 
-            (change)="onNeighborhoodChange()"
-            [disabled]="!allNeighborhoods.length">
-      <option [value]="0" disabled selected>Mahalle Seçiniz...</option>
-      <option *ngFor="let n of allNeighborhoods" [value]="n.id">{{n.name}}</option>
-    </select>
+    <div class="mb-0">
+      <label class="form-label">Mahalle</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-houses"></i></span>
+        <select class="form-select custom-select" 
+                [(ngModel)]="selectedNeighborhoodId" 
+                (change)="onNeighborhoodChange()"
+                [disabled]="!allNeighborhoods.length">
+          <option [value]="0" disabled selected>Mahalle Seçiniz...</option>
+          <option *ngFor="let n of allNeighborhoods" [value]="n.id">{{n.name}}</option>
+        </select>
+      </div>
+    </div>
   </div>
 </div>

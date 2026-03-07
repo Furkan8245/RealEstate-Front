@@ -93,14 +93,14 @@ export class LocationSelectorComponent implements OnInit {
 
   emitLocation() {
     const cityObj = this.cities.find(c => c.id == this.selectedCityId);
-    const districtObj = this.allDistricts.find(d => d.id == this.selectedDistrictId);
+    const districtObj = this.districts.find(d => d.id == this.selectedDistrictId);
     const neighborhoodObj = this.allNeighborhoods.find(n => n.id == this.selectedNeighborhoodId);
 
     this.locationChanged.emit({
      cityId: Number(this.selectedCityId),
     cityName: cityObj?.name || '',
     districtId: Number(this.selectedDistrictId),
-    districtName: districtObj?.name || '', // Artık boş gelmeyecek
+    districtName: districtObj?.name || '', 
     neighborhoodId: Number(this.selectedNeighborhoodId),
     neighborhoodName: neighborhoodObj?.name || ''
   });
