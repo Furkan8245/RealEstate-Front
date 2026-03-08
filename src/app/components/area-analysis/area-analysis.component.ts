@@ -70,6 +70,8 @@ export class AreaAnalysisComponent implements OnInit {
   onSidebarLocationChanged(event:any){
     console.log("Sidebar'dan gelen veri yakalandı:",event);
     this.selectedCityId= event.cityId;
+    this.selectedDistrictId=event.districtId;
+    this.selectedNeighborhoodId=event.neighborhoodId;
     this.selectedLocationNames={
       cityName:event.cityName,
       districtName:event.districtName,
@@ -148,19 +150,32 @@ export class AreaAnalysisComponent implements OnInit {
   private saveToDatabase(result: any) {
   const userId = this.authService.getUserId();
   const userRole = this.authService.getUserRole();
-  if (!userId || !result.geometry || !result.geometry.coordinates) return;
-
-  const firstCoordinates = result.geometry.type === 'Point'
+  if(!userId){
+    console.error("Kullanıcı ID'si alınamadı. Kayıt işlemi iptal edildi.");
+    return;
+  }
+  let coordX=[];
+  let coordY=[];
+  try{
+     const firstCoordinates = result.geometry.type === 'Point'
     ? result.geometry.coordinates
     : result.geometry.coordinates[0][0];
+    coordX=firstCoordinates[0];
+    coordY=firstCoordinates[1];
+  }
+  catch(err){
+    console.warn("Geometri koordinatları alınırken hata oluştu:",err);
+    return;
+  }
+ 
 
   const savePayload = {
-    cityId: this.selectedCityId > 0 ? Number(this.selectedCityId) : 1,
-    districtId: this.selectedDistrictId > 0 ? Number(this.selectedDistrictId) : 1,
-    neighborhoodId: this.selectedNeighborhoodId > 0 ? Number(this.selectedNeighborhoodId) : 1,
-    cityName: this.selectedLocationNames.cityName || '',
-    districtName: this.selectedLocationNames.districtName || '',
-    neighborhoodName: this.selectedLocationNames.neighborhoodName || '',
+    cityId: null,
+    districtId:null,
+    neighborhoodId: null,
+    cityName: this.selectedLocationNames.cityName,
+    districtName: this.selectedLocationNames.districtName,
+    neighborhoodName: this.selectedLocationNames.neighborhoodName,
     propertyName: `Analiz ${new Date().toLocaleDateString()}`,
     parcelNumber: `P-${Math.floor(Math.random() * 1000)}`,
     lotNumber: this.selectedOperation,
@@ -168,20 +183,18 @@ export class AreaAnalysisComponent implements OnInit {
     address: `${this.selectedLocationNames.cityName || ''} / ${this.selectedLocationNames.districtName || ''} / ${this.selectedLocationNames.neighborhoodName || ''}`,
     propertyTypeId: 1,
     ownerId: Number(userId),
-    coordinateX: firstCoordinates[0],
-    coordinateY: firstCoordinates[1],
+    coordinateX: coordX,
+    coordinateY: coordY,
     description : `${userRole.toUpperCase()} tarafından yapılan analiz`,
   };
+  console.log("Kayıt için paket hazırlandı:", savePayload);
   this.reService.saveRealEstate(savePayload).subscribe({
     next: (res) => {
-      const message = userRole === 'Admin'
-      ? "Yönetici kaydı onaylandı ve sisteme işlendi."
-      : "Analiz sonucunuz başarıyla profilinize kaydedildi.";
-      console.log(message);
+     alert("Analiz sonucu başarıyla kaydedildi!");
     },
     error: (err) => {
-      if(err.status === 403) alert("Bu bölgeye kayıt yapma yetkiniz yok!");
-      else alert("Kayıt Hatası:" + err.message);
+     console.error("Backend kayıt hatası:",err);
+     alert("Kayıt sırasında hata meydana geldi. Detaylar logda.");
     }
   });
 }

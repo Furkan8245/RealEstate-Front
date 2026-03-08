@@ -139,7 +139,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (this.pointsCount < 3) {
       alert("Eksik poligon var!");
       return;
-    }
+    } 
+    const analysisData={
+      operationType:this.selectedOperation,
+      cityId:this.selectedCityId,
+      districtId:this.selectedDistrictId,
+      neighborhoodId:this.selectedNeighborhoodId
+    };
+    console.log("Gönderilen analiz verisi:",analysisData)
     this.mapService.sendAnalysisRequest(this.selectedOperation);
   }
 

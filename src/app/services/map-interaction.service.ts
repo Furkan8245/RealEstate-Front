@@ -10,7 +10,7 @@ export class MapInteractionService {
   private locationSubject = new BehaviorSubject<any>(null);
   location$ = this.locationSubject.asObservable();
 
-  private analysisSource = new Subject<string>();
+  private analysisSource = new Subject<any>();
   analysisRequest$ = this.analysisSource.asObservable();
 
   private resetSource=new Subject<void>();
@@ -28,8 +28,8 @@ export class MapInteractionService {
   updateLocation(location:any){
     this.locationSubject.next(location);
   }
-  sendAnalysisRequest(operation: string) {
-    this.analysisSource.next(operation);
+  sendAnalysisRequest(analysisData: any) {
+    this.analysisSource.next(analysisData);
   }
 
   sendResetRequest():void{

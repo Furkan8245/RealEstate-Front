@@ -20,10 +20,14 @@ export class LocationService {
         }
         return this.provincesCache$!;
     }
-    getDistricts(provinceId:number):Observable<any[]>{
-        return this.http.get<any>(`${this.baseUrl}/provinces/${provinceId}`).pipe(
-            map(res=>res.data.districts)
-        );
+    getDistricts(provinceId: number): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/provinces/${provinceId}`).pipe(
+        map(res => res.data.districts.map((d: any) => ({
+            id: d.id,
+            name: d.name 
+        })))
+    );
+
     
     }
     getNeighborhoods(districtId:number):Observable<any[]>{
