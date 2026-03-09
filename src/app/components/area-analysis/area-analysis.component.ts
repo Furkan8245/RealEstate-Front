@@ -150,22 +150,17 @@ export class AreaAnalysisComponent implements OnInit {
   private saveToDatabase(result: any) {
   const userId = this.authService.getUserId();
   const userRole = this.authService.getUserRole();
-  if(!userId){
-    console.error("Kullanıcı ID'si alınamadı. Kayıt işlemi iptal edildi.");
-    return;
-  }
-  let coordX=[];
-  let coordY=[];
+  if(!userId) return;
+  let coordX=0;
+  let coordY=0;
   try{
      const firstCoordinates = result.geometry.type === 'Point'
     ? result.geometry.coordinates
     : result.geometry.coordinates[0][0];
     coordX=firstCoordinates[0];
     coordY=firstCoordinates[1];
-  }
-  catch(err){
-    console.warn("Geometri koordinatları alınırken hata oluştu:",err);
-    return;
+  }catch(err){
+    console.error("Geometri koordinatları alınırken hata oluştu:",err);
   }
  
 
@@ -176,25 +171,24 @@ export class AreaAnalysisComponent implements OnInit {
     cityName: this.selectedLocationNames.cityName,
     districtName: this.selectedLocationNames.districtName,
     neighborhoodName: this.selectedLocationNames.neighborhoodName,
-    propertyName: `Analiz ${new Date().toLocaleDateString()}`,
-    parcelNumber: `P-${Math.floor(Math.random() * 1000)}`,
+    propertyName: `Analiz-${this.selectedOperation.toUpperCase()}`,
+    parcelNumber: Math.floor(Math.random()*999).toString(),
     lotNumber: this.selectedOperation,
     area: Number(result.area),
-    address: `${this.selectedLocationNames.cityName || ''} / ${this.selectedLocationNames.districtName || ''} / ${this.selectedLocationNames.neighborhoodName || ''}`,
+    address: `${this.selectedLocationNames.cityName} / ${this.selectedLocationNames.districtName} / ${this.selectedLocationNames.neighborhoodName}`,
     propertyTypeId: 1,
     ownerId: Number(userId),
     coordinateX: coordX,
     coordinateY: coordY,
-    description : `${userRole.toUpperCase()} tarafından yapılan analiz`,
+    description : `${userRole.toUpperCase()} Analizi: ${this.selectedOperation}`,
   };
-  console.log("Kayıt için paket hazırlandı:", savePayload);
-  this.reService.saveRealEstate(savePayload).subscribe({
+    this.reService.saveRealEstate(savePayload).subscribe({
     next: (res) => {
      alert("Analiz sonucu başarıyla kaydedildi!");
     },
     error: (err) => {
      console.error("Backend kayıt hatası:",err);
-     alert("Kayıt sırasında hata meydana geldi. Detaylar logda.");
+     alert("Kayıt sırasında hata meydana geldi. Konsolu (F12) kontrol edin.");
     }
   });
 }
