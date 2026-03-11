@@ -9,6 +9,7 @@ import { AuthService } from '../../models/authService';
 import { MapInteractionService } from '../../services/map-interaction.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { RealEstateService } from '../../services/real-estate.service';
+import { MapUtils } from '../../utils/map.utils';
 
 
 @Component({
@@ -118,81 +119,55 @@ export class AreaAnalysisComponent implements OnInit {
       return;
     }
     const payload = {
-      geometryA: this.cleanGeometry(this.points[0].geometry),
-      geometryB: this.cleanGeometry(this.points[1].geometry),
-      geometryC: this.cleanGeometry(this.points[2].geometry),
+      geometryA: MapUtils.cleanGeometry(this.points[0].geometry),
+      geometryB: MapUtils.cleanGeometry(this.points[1].geometry),
+      geometryC: MapUtils.cleanGeometry(this.points[2].geometry),
       operationType: this.selectedOperation,
       description: "Angular Analiz İşlemi"
     };
     this.analysisService.calculate(payload).subscribe({
-      next: (response) => {
-        if (response && response.success) {
-          this.analysisResult = response.data;
-          this.mapService.setAnalysisResult(response.data);
-          if (this.analysisResult.geometry) {
-            this.drawResultOnMap(this.analysisResult.geometry);
-            this.saveToDatabase(this.analysisResult);
-          }
-          this.points = [];
-          this.drawnItems.clearLayers();
-          this.mapService.updatePointsCount(0);
-        } else {
-          alert(response.message || "İşlem başarısız.");
-        }
-      },
-      error: (err) => {
-        const errorMsg = err.error?.errors ? JSON.stringify(err.error.errors) : (err.error?.message || "Sunucuyla bağlantı kurulamadı.");
-        alert("Hata Oluştu: " + errorMsg);
-      }
-    });
+      next:(res)=>this.handleAnalysisResponse(res),
+      error:(err)=>this.handleError(err)
+    })
   }
-
+  private handleAnalysisResponse(res: any) {
+    if(!res?.success){
+      alert(res?.message || "Analiz başarısız oldu. Detaylar konsola (F12) bakınız.");
+      return;
+    }
+    this.analysisResult =res.data;
+    this.mapService.setAnalysisResult(this.analysisResult);
+    if(this.analysisResult?.geometry){
+      this.drawResultOnMap(this.analysisResult.geometry);
+      this.saveToDatabase(this.analysisResult);
+    }
+    this.resetDrawingState();
+  }
   private saveToDatabase(result: any) {
   const userId = this.authService.getUserId();
   const userRole = this.authService.getUserRole();
   if(!userId) return;
-  let coordX=0;
-  let coordY=0;
-  try{
-     const firstCoordinates = result.geometry.type === 'Point'
-    ? result.geometry.coordinates
-    : result.geometry.coordinates[0][0];
-    coordX=firstCoordinates[0];
-    coordY=firstCoordinates[1];
-  }catch(err){
-    console.error("Geometri koordinatları alınırken hata oluştu:",err);
-  }
- 
-
-  const savePayload = {
-    cityId: null,
-    districtId:null,
-    neighborhoodId: null,
-    cityName: this.selectedLocationNames.cityName,
-    districtName: this.selectedLocationNames.districtName,
-    neighborhoodName: this.selectedLocationNames.neighborhoodName,
-    propertyName: `Analiz-${this.selectedOperation.toUpperCase()}`,
-    parcelNumber: Math.floor(Math.random()*999).toString(),
-    lotNumber: this.selectedOperation,
-    area: Number(result.area),
-    address: `${this.selectedLocationNames.cityName} / ${this.selectedLocationNames.districtName} / ${this.selectedLocationNames.neighborhoodName}`,
-    propertyTypeId: 1,
-    ownerId: Number(userId),
-    coordinateX: coordX,
-    coordinateY: coordY,
-    description : `${userRole.toUpperCase()} Analizi: ${this.selectedOperation}`,
-  };
+  const savePayload = this.reService.prepareAnalysisPayload(
+    result,
+    this.selectedLocationNames,
+    userId,
+    userRole,
+    this.selectedOperation
+  );
     this.reService.saveRealEstate(savePayload).subscribe({
-    next: (res) => {
-     alert("Analiz sonucu başarıyla kaydedildi!");
-    },
-    error: (err) => {
-     console.error("Backend kayıt hatası:",err);
-     alert("Kayıt sırasında hata meydana geldi. Konsolu (F12) kontrol edin.");
-    }
-  });
-}
-
+      next:()=>console.log("Veritabanına kaydedildi"),
+      error:(err)=>this.handleError(err)
+});
+  }
+  private handleError(err:any){
+    console.error("Analiz sırasında hata oluştu:", err);
+    alert("Analiz sırasında bir hata oluştu. Detaylar konsola (F12) bakınız.");
+  }
+  private resetDrawingState(){
+    this.points=[],
+    this.drawnItems.clearLayers();
+    this.mapService.updatePointsCount(0);
+  }
 
   drawResultOnMap(geometry: any) {
     if (this.resultLayer) {

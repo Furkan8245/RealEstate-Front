@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { MapUtils } from "../utils/map.utils";
 
 @Injectable({
   providedIn: "root",
@@ -46,6 +47,27 @@ export class RealEstateService {
 
   updateRealEstate(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/update`, data, { headers: this.getHeaders() });
+  }
+  prepareAnalysisPayload(result:any,location:any,userId:string,userRole:string,operationType:string){
+    const [x,y]=MapUtils.getFirstCoordinates(result.geometry);
+    return{
+      cityId:null,
+      districtId:null,
+      neighborhoodId:null,
+      cityName:location.cityName,
+      districtName:location.districtName,
+      neighborhoodName:location.neighborhoodName,
+      propertyName:`Analiz-${operationType.toUpperCase()}`,
+      parcelNumber:Math.floor(Math.random()*999).toString(),
+      lotNumber:operationType,
+      area:Number(result.area),
+      address:`${location.cityName} / ${location.districtName}`,
+      propertyTypeId:1,
+      ownerId:Number(userId),
+      coordinateX:x,
+      coordinateY:y,
+      description: `${userRole.toUpperCase()} Analizi: ${operationType}`
+    };
   }
 
   deleteRealEstate(id: number): Observable<any> {
