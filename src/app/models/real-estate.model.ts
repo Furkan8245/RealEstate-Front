@@ -1,14 +1,18 @@
 export interface RealEstateSaveDto{
-    cityId: number | null;
-    cityName:string;
-    districtName:string;
-    neighborhoodName:string;
-    propertyName:string;
-    parcelNumber:string;
-    lotNumber:string;
-    area:number;
-    coordinateX:number;
-    coordinateY:number;
-    ownerId:number;
-    description:string;
+  cityId: number | null;  
+  districtId: number | null;
+  neighborhoodId: number | null;
+  cityName: string;
+  districtName: string;
+  neighborhoodName: string;
+  propertyName: string;
+  parcelNumber: string;
+  lotNumber: string;
+  area: number;
+  address: string;
+  propertyTypeId: number;
+  ownerId: number;
+  coordinateX: number;
+  coordinateY: number;
+  description: string;
 }

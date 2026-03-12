@@ -7,190 +7,127 @@ import { MenuItem } from "../../models/menu-item";
 import { AuthService } from "../../models/authService";
 import { MapInteractionService } from "../../services/map-interaction.service";
 import { ReportService } from "../../services/report.service";
-import html2canvas from "html2canvas";
-import { AreaFormatPipe } from "../../pipes/area.pipe";
 import { LocationSelectorComponent } from "../location/location-selector.component";
-import { jwtDecode } from "jwt-decode";
-import { RealEstateService } from "../../services/real-estate.service";
 import { LogoutButtonComponent } from "../logout-button/logout-button.component";
+import { LocationInfo } from "../../models/locatin-info.model";
+import { AreaFormatPipe } from "../../pipes/area.pipe";
+import html2canvas from "html2canvas";
 
 @Component({
   selector: "app-sidebar",
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, AreaFormatPipe, LocationSelectorComponent,LogoutButtonComponent],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule, 
+    LocationSelectorComponent, 
+    LogoutButtonComponent, 
+    AreaFormatPipe
+  ],
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.css"],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  @Output() locationChanged = new EventEmitter<any>(); //sidebarın harita bileşenine veri fırlatmasını sağladık.
+  @Output() locationChanged = new EventEmitter<LocationInfo>();
+
   menuItems: MenuItem[] = [
     { label: "Taşınmazlar", icon: "fa-user-o", route: "/real-estates", roles: ["Admin", "User"] },
     { label: "Kullanıcı Türleri", icon: "fa-clone", route: "/user-types", roles: ["Admin"] },
     { label: "Operasyon Türleri", icon: "fa-star-o", route: "/ops", roles: ["Admin"] },
-    {label: "Sistem Logları" , icon:"fa-history" , route:"/audit-log",roles:["Admin"]},
+    { label: "Sistem Logları", icon: "fa-history", route: "/audit-log", roles: ["Admin"] },
   ];
 
-  isAdmin:boolean=false;
-
-  currentLocation: any = {
-    cityId: 0,
-    districtId: 0,
-    neighborhoodId: 0
-  };
-
   filteredMenu: MenuItem[] = [];
+  isAdmin: boolean = false;
   showAnalysisForm: boolean = false;
   selectedOperation: string = "intersectionab";
   analysisResult: any = null;
   pointsCount: number = 0;
+  currentLocation: LocationInfo = { cityId: 0, districtId: 0, neighborhoodId: 0, cityName: '', districtName: '', neighborhoodName: '' };
   private destroy$ = new Subject<void>();
-  cities:any[]=[];
-  districts:any[]=[];
-  neighborhoods:any[]=[];
-  selectedCityId:number=0;
-  selectedDistrictId:number=0;
-  selectedNeighborhoodId:number=0;
-  selectedLocationNames:any={cityName:'',districtName:'',neighborhoodName:''};
 
   constructor(
     private authService: AuthService,
     private mapService: MapInteractionService,
     private reportService: ReportService,
-    private realEstateService:RealEstateService,
-    private router:Router
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadMenuByRole();
-    this.listenPointsCount();
-    this.listenAnalysisResult();
     this.checkAdminStatus();
-    this.loadCities();
-  }
-  showRealEstates():void{
-    this.router.navigate(["/real-estates"]);
-  }
-  
-  loadCities() {
-    this.realEstateService.getCities().subscribe({
-      next:(response)=>{
-        if(response?.success){
-          this.cities=response.data;
-        }
-      },
-      error:()=>alert("Şehirler bulunamadı.")
-    });
-  }
-  handleLocationChanged(event: any) {
-    console.log("Sidebar veriyi teslim aldı:", event);
-
-    this.selectedCityId = event.cityId;
-    this.selectedDistrictId = event.districtId;
-    this.selectedNeighborhoodId = event.neighborhoodId;
-
-    this.selectedLocationNames =  {
-      cityName:event.cityName || this.selectedLocationNames.cityName,
-      districtName:event.districtName || this.selectedLocationNames.districtName,
-      neighborhoodName:event.neighborhoodName || this.selectedLocationNames.neighborhoodName
-    };
-    this.currentLocation={...event, ...this.selectedLocationNames};
-    this.mapService.updateLocation(this.currentLocation);
-    this.locationChanged.emit(this.currentLocation);
-
+    this.loadMenuByRole();
+    this.listenMapStreams();
   }
 
-  handleLocationFilter(location: any): void {
-    this.handleLocationChanged(location);
-    this.mapService.setLocationFilter(location);
+  private checkAdminStatus(): void {
+    this.isAdmin = this.authService.isAdmin();
   }
 
   private loadMenuByRole(): void {
     const userRole = this.authService.getUserRole();
-
-  this.filteredMenu = this.menuItems.filter((item) =>
-    item.roles.includes(userRole)
-  );
+    this.filteredMenu = this.menuItems.filter(item => item.roles.includes(userRole));
   }
 
-  private listenPointsCount(): void {
-    this.mapService.pointsCount$.pipe(takeUntil(this.destroy$)).subscribe((count) => {
-      this.pointsCount = count;
-    });
+  private listenMapStreams(): void {
+    this.mapService.pointsCount$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(count => this.pointsCount = count);
+
+    this.mapService.analysisResult$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => this.analysisResult = res);
   }
 
-  private listenAnalysisResult(): void {
-    this.mapService.analysisResult$.pipe(takeUntil(this.destroy$)).subscribe((response) => {
-      this.analysisResult = response;
-    });
+  handleLocationChanged(event: LocationInfo): void {
+    this.currentLocation = { ...event };
+    this.mapService.updateLocation(this.currentLocation);
+    this.locationChanged.emit(this.currentLocation);
   }
-  
 
   toggleAnalysisForm(): void {
     if (!this.showAnalysisForm && this.pointsCount < 3) {
-      alert("Gereklilik: Analiz ayarlarını açabilmek için 3 poligon eklemek gerekir.");
+      alert("Analiz için en az 3 poligon gereklidir.");
       return;
     }
     this.showAnalysisForm = !this.showAnalysisForm;
   }
 
-
-
   executeAnalysis(): void {
-    if (this.pointsCount < 3) {
-      alert("Eksik poligon var!");
-      return;
-    } 
-    const analysisData={
-      operationType:this.selectedOperation,
-      cityId:this.selectedCityId,
-      districtId:this.selectedDistrictId,
-      neighborhoodId:this.selectedNeighborhoodId
-    };
-    console.log("Gönderilen analiz verisi:",analysisData)
+    if (this.pointsCount < 3) return alert("Eksik poligon!");
     this.mapService.sendAnalysisRequest(this.selectedOperation);
   }
 
   resetMap(): void {
     this.showAnalysisForm = false;
     this.analysisResult = null;
-    this.pointsCount = 0;
-    this.currentLocation = { cityId: 0, districtId: 0, neighborhoodId: 0 };
     this.mapService.clearAnalysisResult();
     this.mapService.sendResetRequest();
   }
 
   downloadExcel(): void {
-    if (!this.analysisResult) {
-      alert("Önce analiz yapılması gerekmektedir.");
-      return;
-    }
+    if (!this.analysisResult) return alert("Önce analiz yapmalısınız.");
     this.reportService.exportToExcel(this.analysisResult, "Alan_Analiz_Raporu");
   }
 
   async downloadPdf(): Promise<void> {
+    if (!this.analysisResult) return alert("Önce analiz yapmalısınız.");
     try {
-      if (!this.analysisResult) {
-        alert("Önce analiz yapılması gerekmektedir.");
-        return;
-      }
-
       const mapElement = document.getElementById("map");
       if (!mapElement) return;
 
-      const htmlCanvas = await html2canvas(mapElement, { useCORS: true, scale: 2 });
-      const imageData = htmlCanvas.toDataURL("image/png");
+      const canvas = await html2canvas(mapElement, { useCORS: true, scale: 2 });
+      const imageData = canvas.toDataURL("image/png");
 
-      const headers = ["ID", "İşlem Tipi", "Alan (m²)", "Tarih"];
-      const datas = [[
+      const headers = ["ID", "İşlem", "Alan (m²)", "Tarih"];
+      const rows = [[
         this.analysisResult.id || "-",
         this.analysisResult.operationType || "Bilinmiyor",
-        (this.analysisResult.area ? this.analysisResult.area.toFixed(2) : "0") + " m²",
-        this.analysisResult.createdDate ? new Date(this.analysisResult.createdDate).toLocaleDateString() : new Date().toLocaleDateString()
+        `${this.analysisResult.area?.toFixed(2) || 0} m²`,
+        new Date().toLocaleDateString()
       ]];
-
-      this.reportService.exportToPdfWithImage(headers, datas, imageData, "Alan_Analiz_Raporu");
+      this.reportService.exportToPdfWithImage(headers, rows, imageData, "Alan_Analiz_Raporu");
     } catch (error) {
-      alert("PDF oluşturulurken hata oluştu!");
+      alert("PDF hatası oluştu.");
     }
   }
 
@@ -198,10 +135,4 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  checkAdminStatus():void{
-    this.isAdmin=this.authService.isAdmin();
-   
-  }
-
-  
 }

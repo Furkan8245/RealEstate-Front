@@ -2,6 +2,8 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { MapUtils } from "../utils/map.utils";
+import { RealEstateSaveDto } from "../models/real-estate.model";
+import { LocationInfo } from "../models/locatin-info.model";
 
 @Injectable({
   providedIn: "root",
@@ -41,31 +43,39 @@ export class RealEstateService {
     return this.http.get(`${this.apiUrl}/getmine`, { headers: this.getHeaders() });
   }
 
-  saveRealEstate(data: any): Observable<any> {
+  saveRealEstate(data: RealEstateSaveDto): Observable<any> {
     return this.http.post(`${this.apiUrl}/add`, data, { headers: this.getHeaders() });
   }
 
   updateRealEstate(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/update`, data, { headers: this.getHeaders() });
   }
-  prepareAnalysisPayload(result:any,location:any,userId:string,userRole:string,operationType:string){
-    const [x,y]=MapUtils.getFirstCoordinates(result.geometry);
-    return{
-      cityId:null,
-      districtId:null,
-      neighborhoodId:null,
-      cityName:location.cityName,
-      districtName:location.districtName,
-      neighborhoodName:location.neighborhoodName,
-      propertyName:`Analiz-${operationType.toUpperCase()}`,
-      parcelNumber:Math.floor(Math.random()*999).toString(),
-      lotNumber:operationType,
-      area:Number(result.area),
-      address:`${location.cityName} / ${location.districtName}`,
-      propertyTypeId:1,
-      ownerId:Number(userId),
-      coordinateX:x,
-      coordinateY:y,
+
+  prepareAnalysisPayload(
+    result: any, 
+    location: LocationInfo, 
+    userId: string, 
+    userRole: string, 
+    operationType: string
+  ): RealEstateSaveDto {
+    const [x, y] = MapUtils.getFirstCoordinates(result.geometry);
+
+    return {
+      cityId: location.cityId || null,
+      districtId: location.districtId || null,
+      neighborhoodId: location.neighborhoodId || null,
+      cityName: location.cityName,
+      districtName: location.districtName,
+      neighborhoodName: location.neighborhoodName,
+      propertyName: `Analiz-${operationType.toUpperCase()}`,
+      parcelNumber: Math.floor(Math.random() * 999).toString(),
+      lotNumber: operationType,
+      area: Number(result.area),
+      address: `${location.cityName} / ${location.districtName} / ${location.neighborhoodName}`,
+      propertyTypeId: 1,
+      ownerId: Number(userId),
+      coordinateX: x,
+      coordinateY: y,
       description: `${userRole.toUpperCase()} Analizi: ${operationType}`
     };
   }
