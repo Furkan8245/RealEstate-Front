@@ -1,49 +1,81 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import * as L from 'leaflet';
+import { MapUtils } from '../utils/map.utils';
 
 @Injectable({ providedIn: 'root' })
 export class MapInteractionService {
+  // --- Harita Nesneleri (Sadece bu servis bilir) ---
+  private map!: L.Map;
+  private drawnItems: L.FeatureGroup = new L.FeatureGroup();
+  private resultLayer: L.GeoJSON | null = null;
 
+  // --- State (Durum) Yönetimi ---
   private pointsCountSource = new BehaviorSubject<number>(0);
   pointsCount$ = this.pointsCountSource.asObservable();
 
-  private locationSubject = new BehaviorSubject<any>(null);
-  location$ = this.locationSubject.asObservable();
+  private analysisResultSource = new BehaviorSubject<any>(null);
+  analysisResult$ = this.analysisResultSource.asObservable();
 
   private analysisSource = new Subject<any>();
   analysisRequest$ = this.analysisSource.asObservable();
 
-  private resetSource=new Subject<void>();
-  resetRequest$=this.resetSource.asObservable();
+  private resetSource = new Subject<void>();
+  resetRequest$ = this.resetSource.asObservable();
 
-  private analysisResultSource=new BehaviorSubject<any>(null);
-  analysisResult$=this.analysisResultSource.asObservable();
+  // --- Harita Operasyonları ---
 
-  private locationFilterSubject =new BehaviorSubject<any>(null);
-  locationFilter$ = this.locationFilterSubject.asObservable();
+  initMap(elementId: string): L.Map {
+    this.map = L.map(elementId).setView([39.9334, 32.8597], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 20,
+      attribution: 'OpenStreetMap'
+    }).addTo(this.map);
 
-  updatePointsCount(count: number) {
-    this.pointsCountSource.next(count);
-  }
-  updateLocation(location:any){
-    this.locationSubject.next(location);
-  }
-  sendAnalysisRequest(analysisData: any) {
-    this.analysisSource.next(analysisData);
+    this.map.addLayer(this.drawnItems);
+    this.map.addControl(MapUtils.getDrawControl(this.drawnItems));
+
+    return this.map;
   }
 
-  sendResetRequest():void{
-    this.resetSource.next();
+  // Çizim olaylarını buraya taşıdık
+  setupDrawEvents(onDraw: (geoJson: any) => void) {
+    this.map.on(L.Draw.Event.CREATED, (e: any) => {
+      const layer = e.layer;
+      this.drawnItems.addLayer(layer);
+      onDraw(layer.toGeoJSON());
+      this.updatePointsCount(this.drawnItems.getLayers().length);
+    });
   }
-  setAnalysisResult(result:any){
-    this.analysisResultSource.next(result);
+
+  drawResult(geometry: any) {
+    this.clearResultLayer();
+    this.resultLayer = L.geoJSON(geometry, {
+      style: { color: '#e74c3c', weight: 4, fillColor: '#f1c40f', fillOpacity: 0.5 }
+    }).addTo(this.map);
+
+    const bounds = this.resultLayer.getBounds();
+    if (bounds.isValid()) this.map.fitBounds(bounds);
   }
-  clearAnalysisResult(){
+
+  resetMap() {
+    this.drawnItems.clearLayers();
+    this.clearResultLayer();
+    this.updatePointsCount(0);
     this.analysisResultSource.next(null);
   }
 
-  setLocationFilter(filter:any):void{
-    this.locationFilterSubject.next(filter);
+  private clearResultLayer() {
+    if (this.resultLayer) {
+      this.map.removeLayer(this.resultLayer);
+      this.resultLayer = null;
+    }
   }
 
+  // --- Eski Helper Metodların ---
+  updatePointsCount(count: number) { this.pointsCountSource.next(count); }
+  sendAnalysisRequest(data: any) { this.analysisSource.next(data); }
+  sendResetRequest() { this.resetSource.next(); }
+  setAnalysisResult(result: any) { this.analysisResultSource.next(result); }
 }
