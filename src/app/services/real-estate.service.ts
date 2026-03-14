@@ -1,54 +1,57 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { MapUtils } from "../utils/map.utils";
 import { RealEstateSaveDto } from "../models/real-estate.model";
 import { LocationInfo } from "../models/locatin-info.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class RealEstateService {
-  private readonly apiUrl = "https://localhost:7241/api/RealEstates";
-  private readonly cityUrl = "https://localhost:7241/api/City";
-  private readonly districtUrl = "https://localhost:7241/api/District";
-  private readonly neighborhoodUrl = "https://localhost:7241/api/Neighborhood";
+  private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
-
   getCities(): Observable<any> {
-    return this.http.get(`${this.cityUrl}/getall`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/City/getall`);
   }
 
   getDistricts(cityId?: number): Observable<any> {
-    const url = cityId ? `${this.districtUrl}/getbycity?cityId=${cityId}` : `${this.districtUrl}/getall`;
-    return this.http.get(url, { headers: this.getHeaders() });
+    const url = cityId 
+      ? `${this.baseUrl}/District/getbycity?cityId=${cityId}` 
+      : `${this.baseUrl}/District/getall`;
+    return this.http.get(url);
   }
 
   getNeighborhoods(districtId?: number): Observable<any> {
-    const url = districtId ? `${this.neighborhoodUrl}/getbydistrict?districtId=${districtId}` : `${this.neighborhoodUrl}/getall`;
-    return this.http.get(url, { headers: this.getHeaders() });
+    const url = districtId 
+      ? `${this.baseUrl}/Neighborhood/getbydistrict?districtId=${districtId}` 
+      : `${this.baseUrl}/Neighborhood/getall`;
+    return this.http.get(url);
   }
 
   getAllRealEstates(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/getall`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/RealEstates/getall`);
   }
 
   getMyRealEstates(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/getmine`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/RealEstates/getmine`);
   }
 
   saveRealEstate(data: RealEstateSaveDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, data, { headers: this.getHeaders() });
+    return this.http.post(`${this.baseUrl}/RealEstates/add`, data);
   }
 
   updateRealEstate(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update`, data, { headers: this.getHeaders() });
+    return this.http.put(`${this.baseUrl}/RealEstates/update`, data);
+  }
+
+  deleteRealEstate(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/RealEstates/delete?realEstateId=${id}`, {
+      body: { id: id }
+    });
   }
 
   prepareAnalysisPayload(
@@ -78,12 +81,5 @@ export class RealEstateService {
       coordinateY: y,
       description: `${userRole.toUpperCase()} Analizi: ${operationType}`
     };
-  }
-
-  deleteRealEstate(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete?realEstateId=${id}`, {
-      headers: this.getHeaders(),
-      body: { id: id }
-    });
   }
 }
