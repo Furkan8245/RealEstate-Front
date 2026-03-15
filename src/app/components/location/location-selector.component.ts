@@ -1,8 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationService } from '../../services/location.service';
-import { LocationInfo } from '../../models/locatin-info.model';
+import { City, District, LocationInfo, Neighborhood } from '../../models/location.model';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-location-selector',
@@ -11,55 +12,72 @@ import { LocationInfo } from '../../models/locatin-info.model';
   templateUrl: './location-selector.component.html',
   styleUrls: ['./location-selector.component.css']
 })
-export class LocationSelectorComponent implements OnInit {
-  cities: any[] = [];
-  districts: any[] = []; 
-  neighborhoods: any[] = [];
+export class LocationSelectorComponent implements OnInit,OnDestroy {
+  cities: City[] = [];
+  districts: District[] = []; 
+  neighborhoods: Neighborhood[] = [];
 
   selectedCityId: number = 0;
   selectedDistrictId: number = 0;
   selectedNeighborhoodId: number = 0;
 
   @Output() locationChanged = new EventEmitter<LocationInfo>();
+  
+  private destroy$=new Subject<void>();
 
   constructor(private locationService: LocationService) {}
 
   ngOnInit(): void {
     this.loadCities();
   }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   private loadCities() {
-    this.locationService.getCities().subscribe({
-      next: (data) => this.cities = data,
-      error: (err) => console.error("Şehirler yüklenemedi", err)
+    this.locationService.getCities()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next:(data)=>this.cities=data,
+      error:(err)=>console.error("Şehirler yüklenemedi",err)
     });
   }
 
   onCityChange() {
-    this.districts = [];
-    this.neighborhoods = [];
-    this.selectedDistrictId = 0;
-    this.selectedNeighborhoodId = 0;
+    this.resetSelection('city');
 
-    if (this.selectedCityId > 0) {
-      this.locationService.getDistricts(this.selectedCityId).subscribe(data => {
-        this.districts = data;
-        this.emitLocation();
+    if (this.selectedCityId>0) {
+      this.locationService.getDistricts(this.selectedCityId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data=>{
+        this.districts=data;
       });
     }
   }
 
   onDistrictChange() {
-    this.neighborhoods = [];
-    this.selectedNeighborhoodId = 0;
+    this.resetSelection('district');
 
     if (this.selectedDistrictId > 0) {
-      this.locationService.getNeighborhoods(this.selectedDistrictId).subscribe(data => {
+      this.locationService.getNeighborhoods(this.selectedDistrictId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
         this.neighborhoods = data;
         this.emitLocation();
       });
     }
   }
+  private resetSelection(level: 'city' | 'district') {
+    if (level==='city') {
+      this.districts=[];
+      this.selectedDistrictId=0;
+    }
+    this.neighborhoods=[];
+    this.selectedNeighborhoodId=0;
+    this.emitLocation();
+  }
+
 
   onNeighborhoodChange() {
     this.emitLocation();
