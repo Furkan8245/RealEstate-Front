@@ -1,9 +1,20 @@
 export interface RealEstate {
-    id: number;
-    userId: string;
-    name: string;
-    operationType: string;
-    area: number;
-    geometryJson: string; 
-    createdDate: Date;
+  realEstateId: number;
+  cityId: number;
+  cityName: string;
+  districtId: number;
+  districtName: string;
+  neighborhoodId: number;
+  neighborhoodName: string;
+  area: number;
+  coordinateX: number;
+  coordinateY: number;
+  address: string;
+  propertyName: string;
+  description: string;
+  userId?: number;
+  name?: string;
+  operationType?: string;
+  geometryJson?: string;
+  createdDate?: string | Date;
 }

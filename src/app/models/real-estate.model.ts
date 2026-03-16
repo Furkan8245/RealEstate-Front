@@ -1,5 +1,5 @@
 export interface RealEstateSaveDto{
-  cityId: number | null;  
+cityId: number | null;
   districtId: number | null;
   neighborhoodId: number | null;
   cityName: string;

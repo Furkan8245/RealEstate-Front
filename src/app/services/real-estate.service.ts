@@ -3,8 +3,9 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { MapUtils } from "../utils/map.utils";
 import { RealEstateSaveDto } from "../models/real-estate.model";
-import { LocationInfo } from "../models/locatin-info.model";
 import { environment } from "../../environments/environment";
+import { City, District, LocationInfo, Neighborhood } from "../models/location.model";
+import { RealEstate } from "../models/real-estate";
 
 @Injectable({
   providedIn: "root",
@@ -14,30 +15,30 @@ export class RealEstateService {
 
   constructor(private http: HttpClient) {}
 
-  getCities(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/City/getall`);
+  getCities(): Observable<City[]> {
+    return this.http.get<City[]>(`${this.baseUrl}/City/getall`);
   }
 
-  getDistricts(cityId?: number): Observable<any> {
+  getDistricts(cityId?: number): Observable<District[]> {
     const url = cityId 
       ? `${this.baseUrl}/District/getbycity?cityId=${cityId}` 
       : `${this.baseUrl}/District/getall`;
-    return this.http.get(url);
+    return this.http.get<District[]>(url);
   }
 
-  getNeighborhoods(districtId?: number): Observable<any> {
+  getNeighborhoods(districtId?: number): Observable<Neighborhood[]> {
     const url = districtId 
       ? `${this.baseUrl}/Neighborhood/getbydistrict?districtId=${districtId}` 
       : `${this.baseUrl}/Neighborhood/getall`;
-    return this.http.get(url);
+    return this.http.get<Neighborhood[]>(url);
   }
 
-  getAllRealEstates(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/RealEstates/getall`);
+  getAllRealEstates(): Observable<RealEstate[]> {
+    return this.http.get<RealEstate[]>(`${this.baseUrl}/RealEstates/getall`);
   }
 
-  getMyRealEstates(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/RealEstates/getmine`);
+  getMyRealEstates(): Observable<RealEstate[]> {
+    return this.http.get<RealEstate[]>(`${this.baseUrl}/RealEstates/getmine`);
   }
 
   saveRealEstate(data: RealEstateSaveDto): Observable<any> {
@@ -50,7 +51,7 @@ export class RealEstateService {
 
   deleteRealEstate(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/RealEstates/delete?realEstateId=${id}`, {
-      body: { id: id }
+      params:{realEstateId:id.toString()}
     });
   }
 
