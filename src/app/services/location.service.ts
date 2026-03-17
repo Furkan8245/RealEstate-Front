@@ -9,28 +9,25 @@ import { City, District, Neighborhood } from "../models/location.model";
 })
 export class LocationService {
     private readonly baseUrl= environment.turkiyeApiUrl;
-    private provincesCache$?:Observable<City[]>;
+    private readonly provincesCache$=this.http.get<{data:City[]}>(`{this.baseUrl}/provinces`).pipe(
+        map(res=>res.data),
+        shareReplay(1)
+    );
 
     constructor(private http:HttpClient) {}
 
-    getCities():Observable<City[]> {
-        if (!this.provincesCache$) {
-            this.provincesCache$=this.http.get<{data:City[]}>(`${this.baseUrl}/provinces`).pipe(
-                map(res=>res.data),
-                shareReplay(1)
-            );
-        }
-        return this.provincesCache$!;
+    getCities():Observable<City[]>{
+        return this.provincesCache$;
     }
     getDistricts(provinceId: number): Observable<District[]> {
-    return this.http.get<{data: { districts: District[] }}>(`${this.baseUrl}/provinces/${provinceId}`).pipe(
-       map(res=>res.data.districts)
-    );
-
-    
+        if (!provinceId) return new Observable(sub=>sub.next([]));
+        return this.http.get<{ data:{districts:District[]}}>(`${this.baseUrl}/provinces/${provinceId}`).pipe(
+            map(res=>res.data.districts)
+        );
     }
     getNeighborhoods(districtId:number):Observable<Neighborhood[]>{
-        return this.http.get<{data: { neighborhoods: Neighborhood[] }}>(`${this.baseUrl}/districts/${districtId}`).pipe(
+        if(!districtId) return new Observable(sub=>sub.next([]));
+        return this.http.get<{data:{neighborhoods:Neighborhood[]}}>(`${this.baseUrl}/districts/${districtId}`).pipe(
             map(res=>res.data.neighborhoods)
         );
     }
