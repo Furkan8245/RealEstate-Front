@@ -9,9 +9,9 @@ import { MapInteractionService } from "../../services/map-interaction.service";
 import { ReportService } from "../../services/report.service";
 import { LocationSelectorComponent } from "../location/location-selector.component";
 import { LogoutButtonComponent } from "../logout-button/logout-button.component";
-import { LocationInfo } from "../../models/locatin-info.model";
 import { AreaFormatPipe } from "../../pipes/area.pipe";
 import html2canvas from "html2canvas";
+import { LocationInfo } from "../../models/location.model";
 
 @Component({
   selector: "app-sidebar",
@@ -80,7 +80,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   handleLocationChanged(event: LocationInfo): void {
     this.currentLocation = { ...event };
-    this.mapService.updateLocation(this.currentLocation);
+    this.mapService.applyLocationFilter(this.currentLocation);
     this.locationChanged.emit(this.currentLocation);
   }
 
@@ -94,14 +94,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   executeAnalysis(): void {
     if (this.pointsCount < 3) return alert("Eksik poligon!");
-    this.mapService.sendAnalysisRequest(this.selectedOperation);
+    this.mapService.setAnalysisResult(this.selectedOperation);
   }
 
   resetMap(): void {
-    this.showAnalysisForm = false;
-    this.analysisResult = null;
-    this.mapService.clearAnalysisResult();
-    this.mapService.sendResetRequest();
+    this.mapService.resetMap();
   }
 
   downloadExcel(): void {
@@ -127,6 +124,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       ]];
       this.reportService.exportToPdfWithImage(headers, rows, imageData, "Alan_Analiz_Raporu");
     } catch (error) {
+      console.error("PDF export error:",error);
       alert("PDF hatası oluştu.");
     }
   }

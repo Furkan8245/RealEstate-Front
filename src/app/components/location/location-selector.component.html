@@ -36,9 +36,9 @@
         <select class="form-select custom-select" 
                 [(ngModel)]="selectedNeighborhoodId" 
                 (change)="onNeighborhoodChange()"
-                [disabled]="!allNeighborhoods.length">
+                [disabled]="!neighborhoods.length">
           <option [value]="0" disabled selected>Mahalle Seçiniz...</option>
-          <option *ngFor="let n of allNeighborhoods" [value]="n.id">{{n.name}}</option>
+          <option *ngFor="let n of neighborhoods" [value]="n.id">{{n.name}}</option>
         </select>
       </div>
     </div>
