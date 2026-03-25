@@ -12,14 +12,17 @@ export class MapInteractionService {
   private drawnItems: L.FeatureGroup = new L.FeatureGroup();
   private resultLayer: L.GeoJSON | null = null;
 
-  private locationFilterSubject=new BehaviorSubject<LocationInfo | null>(null);
-  locationFilter$=this.locationFilterSubject.asObservable();
+  private locationFilterSubject = new BehaviorSubject<LocationInfo | null>(null);
+  locationFilter$ = this.locationFilterSubject.asObservable();
   
-  private drawEventSource=new Subject<any>();
-  drawEvent$=this.drawEventSource.asObservable();
+  private drawEventSource = new Subject<any>();
+  drawEvent$ = this.drawEventSource.asObservable();
   
   private pointsCountSource = new BehaviorSubject<number>(0);
   pointsCount$ = this.pointsCountSource.asObservable();
+
+  private analysisRequestSource = new Subject<string>();
+  analysisRequest$ = this.analysisRequestSource.asObservable();
 
   private analysisResultSource = new BehaviorSubject<any>(null);
   analysisResult$ = this.analysisResultSource.asObservable();
@@ -27,9 +30,16 @@ export class MapInteractionService {
   private resetSource = new Subject<void>();
   resetRequest$ = this.resetSource.asObservable();
 
-  initMap(elementId: string): void {
+  public getMapInstance(): L.Map {
+    return this.map;
+  }
 
-    if (this.map) return;
+  initMap(elementId: string): void {
+    if (this.map) {
+      setTimeout(() => this.map.invalidateSize(), 100);
+      return;
+    }
+
     this.map = L.map(elementId).setView([39.9334, 32.8597], 13);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -40,15 +50,17 @@ export class MapInteractionService {
     this.map.addLayer(this.drawnItems);
     this.map.addControl(MapUtils.getDrawControl(this.drawnItems));
 
-    this.map.on(L.Draw.Event.CREATED,(e:any)=>{
+    this.map.on(L.Draw.Event.CREATED, (e: any) => {
       const layer = e.layer;
       this.drawnItems.addLayer(layer);
       this.drawEventSource.next(layer.toGeoJSON());
       this.updatePointsCount(this.drawnItems.getLayers().length);
     });
+
+    setTimeout(() => this.map.invalidateSize(), 200);
   }
 
-  applyLocationFilter(filter:LocationInfo | null):void {
+  applyLocationFilter(filter: LocationInfo | null): void {
     this.locationFilterSubject.next(filter);
   }
 
@@ -65,21 +77,29 @@ export class MapInteractionService {
     if (bounds.isValid()) this.map.fitBounds(bounds);
   }
 
-  resetMap():void {
+  executeAnalysis(operation: string): void {
+    this.analysisRequestSource.next(operation);
+  }
+
+  resetMap(): void {
     this.drawnItems.clearLayers();
     this.clearResultLayer();
     this.updatePointsCount(0);
     this.analysisResultSource.next(null);
-    this.locationFilterSubject.next(null);
   }
 
-  private clearResultLayer() {
+  private clearResultLayer(): void {
     if (this.resultLayer && this.map) {
       this.map.removeLayer(this.resultLayer);
       this.resultLayer = null;
     }
   }
 
-  updatePointsCount(count: number) { this.pointsCountSource.next(count); }
-  setAnalysisResult(result: any) { this.analysisResultSource.next(result); }
+  updatePointsCount(count: number): void {
+    this.pointsCountSource.next(count);
+  }
+
+  setAnalysisResult(result: any): void {
+    this.analysisResultSource.next(result);
+  }
 }

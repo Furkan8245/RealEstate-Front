@@ -92,7 +92,7 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
     this.particles.add(net, earth);
     this.world.add(this.particles);
     
-    const hLight = new THREE.HemisphereLight('#9e7676ff', '#593d3dff', 2);
+    const hLight = new THREE.HemisphereLight('#9e7676', '#593d3d', 2);
     this.world.add(hLight);
     
     this.scene.add(this.world);
@@ -106,8 +106,6 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
       this.particles.rotation.x += 0.000001;
       this.renderer.render(this.scene, this.camera);
     } else {
-      // Harita ekranındayken render'ı durdurup kaynak tasarrufu yapabilirsin
-      // Veya çok yavaş bir rotasyon bırakabilirsin
       this.renderer.clear();
     }
   }

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { AreaAnalysis } from '../models/areaAnalysis';
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
-// Engin Hoca Standart Response Yapısı
 export interface SingleResponseModel<T> {
   data: T;
   success: boolean;
@@ -12,12 +12,23 @@ export interface SingleResponseModel<T> {
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
-  apiUrl = 'https://localhost:7241/api/AreaAnalysis/';
+  apiUrl = `${environment.apiBaseUrl}/AreaAnalysis`;
 
   constructor(private httpClient: HttpClient) {}
 
-  // Swagger'daki POST /calculate işlemi
+
   calculate(payload: any): Observable<SingleResponseModel<AreaAnalysis>> {
-    return this.httpClient.post<SingleResponseModel<AreaAnalysis>>(this.apiUrl + 'calculate', payload);
+    if (!payload) {
+      return throwError(()=>new Error("Analiz için veri sağlanmadı."));
+    }
+    return this.httpClient
+    .post<SingleResponseModel<AreaAnalysis>>(`${this.apiUrl}/calculate`,payload)
+    .pipe(
+      catchError(this.handleError)
+    );
+  }
+  private handleError(error:any){
+    console.error('Analiz sırasında hata meydana geldi:',error);
+    return throwError(()=>new Error(error.message || 'Sunucu hatası.'));
   }
 }

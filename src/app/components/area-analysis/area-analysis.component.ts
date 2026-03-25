@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter, Subject, takeUntil } from 'rxjs';
@@ -19,7 +19,7 @@ import { geoJSON } from 'leaflet';
   templateUrl: './area-analysis.component.html',
   styleUrl: './area-analysis.component.css'
 })
-export class AreaAnalysisComponent implements OnInit, OnDestroy {
+export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
   private points: any[] = [];
   private destroy$ = new Subject<void>();
   selectedLocationNames!:LocationInfo;
@@ -32,8 +32,13 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.mapService.initMap('map');
     this.listenGlobalEvents();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(()=>{
+      this.mapService.initMap('map');
+    },200);
   }
 
   private listenGlobalEvents(): void {
@@ -43,7 +48,7 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy {
       .subscribe((geoJSON:any)=>{
         this.points.push(geoJSON);
       })
-    this.mapService.resetRequest$
+    this.mapService.analysisResult$
       .pipe(takeUntil(this.destroy$))
       .subscribe((result:any)=>{
         if (typeof result === 'string') {
@@ -54,7 +59,10 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy {
       this.mapService.locationFilter$
       .pipe(takeUntil(this.destroy$))
       .subscribe((filter)=>{
-        if(!filter) this.clearAll();
+        if(!filter) {
+          this.clearAll();
+          this.mapService.resetMap();
+        }
       });
   }
 

@@ -65,7 +65,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private loadMenuByRole(): void {
     const userRole = this.authService.getUserRole();
-    this.filteredMenu = this.menuItems.filter(item => item.roles.includes(userRole));
+    if (!userRole) {
+      this.filteredMenu= [];
+      return;
+    }
+    this.filteredMenu = this.menuItems.filter(item => 
+      item.roles && item.roles.includes(userRole)
+    );
   }
 
   private listenMapStreams(): void {

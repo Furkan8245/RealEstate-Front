@@ -9,8 +9,8 @@ import { City, District, Neighborhood } from "../models/location.model";
 })
 export class LocationService {
     private readonly baseUrl= environment.turkiyeApiUrl;
-    private readonly provincesCache$=this.http.get<{data:City[]}>(`{this.baseUrl}/provinces`).pipe(
-        map(res=>res.data),
+    private readonly provincesCache$ = this.http.get<{data: City[]}>(`${this.baseUrl}/provinces`).pipe(
+        map(res => res.data),
         shareReplay(1)
     );
 

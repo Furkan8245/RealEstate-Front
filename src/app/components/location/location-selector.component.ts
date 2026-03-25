@@ -30,10 +30,6 @@ export class LocationSelectorComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.loadCities();
   }
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
   private loadCities() {
     this.locationService.getCities()
@@ -44,29 +40,28 @@ export class LocationSelectorComponent implements OnInit,OnDestroy {
     });
   }
 
-  onCityChange() {
+  onCityChange():void {
     this.resetSelection('city');
+    if (this.selectedCityId<=0) return;
 
-    if (this.selectedCityId>0) {
       this.locationService.getDistricts(this.selectedCityId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(data=>{
-        this.districts=data;
-      });
-    }
+      .subscribe(data=>this.districts=data);
+    
   }
 
-  onDistrictChange() {
+  onDistrictChange():void {
     this.resetSelection('district');
-
-    if (this.selectedDistrictId > 0) {
-      this.locationService.getNeighborhoods(this.selectedDistrictId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.neighborhoods = data;
-        this.emitLocation();
-      });
-    }
+    if(this.selectedCityId<=0) return;
+    this.locationService.getDistricts(this.selectedCityId)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(data=>{
+      this.neighborhoods=data;
+      this.emitLocation();
+    });
+  }
+    onNeighborhoodChange():void {
+    this.emitLocation();
   }
   private resetSelection(level: 'city' | 'district') {
     if (level==='city') {
@@ -77,24 +72,26 @@ export class LocationSelectorComponent implements OnInit,OnDestroy {
     this.selectedNeighborhoodId=0;
     this.emitLocation();
   }
+  private emitLocation():void {
+    const cityId = Number(this.selectedCityId);
+    const districtId = Number(this.selectedDistrictId);
+    const neighborhoodId = Number(this.selectedNeighborhoodId);
 
-
-  onNeighborhoodChange() {
-    this.emitLocation();
-  }
-
-  private emitLocation() {
-    const city = this.cities.find(c => c.id == this.selectedCityId);
-    const district = this.districts.find(d => d.id == this.selectedDistrictId);
-    const neighborhood = this.neighborhoods.find(n => n.id == this.selectedNeighborhoodId);
+    const city=this.cities.find(c=>c.id===cityId);
+    const district=this.districts.find(d=>d.id===districtId);
+    const neighborhood=this.neighborhoods.find(n=>n.id===neighborhoodId);
 
     this.locationChanged.emit({
-      cityId: Number(this.selectedCityId),
+      cityId: cityId,
       cityName: city?.name || '',
-      districtId: Number(this.selectedDistrictId),
+      districtId: districtId,
       districtName: district?.name || '', 
-      neighborhoodId: Number(this.selectedNeighborhoodId),
+      neighborhoodId:neighborhoodId,
       neighborhoodName: neighborhood?.name || ''
     });
+  }
+    ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
