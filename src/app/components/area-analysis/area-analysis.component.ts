@@ -38,7 +38,12 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(()=>{
       this.mapService.initMap('map');
-    },200);
+
+      const map = this.mapService.getMapInstance();
+      if (map) {
+        setTimeout(()=>map.invalidateSize(),100)
+      }
+    },400);
   }
 
   private listenGlobalEvents(): void {

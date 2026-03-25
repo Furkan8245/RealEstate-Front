@@ -35,11 +35,15 @@ export class MapInteractionService {
   }
 
   initMap(elementId: string): void {
-    if (this.map) {
+    const container=L.DomUtil.get(elementId);
+    if(!container) return;
+    if (this.map && (this.map as any)._container === container) {
       setTimeout(() => this.map.invalidateSize(), 100);
       return;
     }
-
+    if (this.map) {
+      this.map.remove();
+    }
     this.map = L.map(elementId).setView([39.9334, 32.8597], 13);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
