@@ -1,7 +1,4 @@
 <app-background></app-background>
-
-<div class="visual-effect-overlay"></div>
-
-<main class="main-layout">
-    <router-outlet></router-outlet>
-</main>
+<div [ngClass]="isAuthPage() ? 'auth-container' : 'main-wrapper'">
+  <router-outlet></router-outlet>
+</div>

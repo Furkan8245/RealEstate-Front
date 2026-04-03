@@ -25,8 +25,7 @@
             </div>
           </div>
 
-          <div class="mb-4">
-            <label for="password" class="form-label fw-bold">Şifre</label>
+          <div class="mb-2"> <label for="password" class="form-label fw-bold">Şifre</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-key"></i></span>
               <input 
@@ -40,6 +39,12 @@
             </div>
           </div>
 
+          <div class="text-end mb-4">
+            <a routerLink="/forgot-password" class="text-decoration-none small text-muted hover-primary">
+              Şifremi Unuttum?
+            </a>
+          </div>
+
           <div class="d-grid">
             <button 
               type="submit" 
@@ -50,8 +55,8 @@
           </div>
 
           <div class="text-center mt-3">
-            <span>Hesabın Yok Mu?</span>
-            <a routerLink="/register" class="text-decoration-none fw-bold ms-1">Hemen Kayıt Ol</a>
+            <span class="text-muted">Hesabın Yok Mu?</span>
+            <a routerLink="/register" class="text-decoration-none fw-bold ms-1 text-primary">Hemen Kayıt Ol</a>
           </div>
 
         </form>

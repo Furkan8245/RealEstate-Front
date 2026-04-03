@@ -1,28 +1,27 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { AnalysisService } from '../../services/analysis.service';
-import { AreaFormatPipe } from '../../pipes/area.pipe';
 import { AuthService } from '../../models/authService';
 import { MapInteractionService } from '../../services/map-interaction.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { RealEstateService } from '../../services/real-estate.service';
 import { MapUtils } from '../../utils/map.utils';
 import { LocationInfo } from '../../models/location.model';
-import { geoJSON } from 'leaflet';
 
 @Component({
   selector: 'app-area-analysis',
   standalone: true,
-  imports: [CommonModule, FormsModule, AreaFormatPipe, SidebarComponent],
+  // AreaFormatPipe listeden çıkarıldı çünkü HTML'de kullanılmıyor
+  imports: [CommonModule, FormsModule, SidebarComponent], 
   templateUrl: './area-analysis.component.html',
   styleUrl: './area-analysis.component.css'
 })
-export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
+export class AreaAnalysisComponent implements OnInit, OnDestroy, AfterViewInit {
   private points: any[] = [];
   private destroy$ = new Subject<void>();
-  selectedLocationNames!:LocationInfo;
+  selectedLocationNames!: LocationInfo;
 
   constructor(
     private mapService: MapInteractionService,
@@ -36,35 +35,34 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(()=>{
+    setTimeout(() => {
       this.mapService.initMap('map');
-
       const map = this.mapService.getMapInstance();
       if (map) {
-        setTimeout(()=>map.invalidateSize(),100)
+        setTimeout(() => map.invalidateSize(), 100);
       }
-    },400);
+    }, 400);
   }
 
   private listenGlobalEvents(): void {
-    
     this.mapService.drawEvent$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((geoJSON:any)=>{
+      .subscribe((geoJSON: any) => {
         this.points.push(geoJSON);
-      })
+      });
+
     this.mapService.analysisResult$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((result:any)=>{
+      .subscribe((result: any) => {
         if (typeof result === 'string') {
           this.runAnalysisFlow(result);
         }
       });
 
-      this.mapService.locationFilter$
+    this.mapService.locationFilter$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((filter)=>{
-        if(!filter) {
+      .subscribe((filter) => {
+        if (!filter) {
           this.clearAll();
           this.mapService.resetMap();
         }
@@ -72,7 +70,10 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
   }
 
   private runAnalysisFlow(operation: string): void {
-    if (this.points.length < 3) return alert("Eksik veri: 3 poligon gerekli.");
+    if (this.points.length < 3) {
+      alert("Eksik veri: 3 poligon gerekli.");
+      return;
+    }
 
     const payload = {
       geometryA: MapUtils.cleanGeometry(this.points[0].geometry),
@@ -82,37 +83,36 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy,AfterViewInit {
     };
 
     this.analysisService.calculate(payload)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next:(response)=>{
-        if (response?.success) {
-          this.handleAnalysisSuccess(response.data,operation);
-        }
-      },
-      error:(err)=>console.error('Analiz hatası:',err)
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response?.success) {
+            this.handleAnalysisSuccess(response.data, operation);
+          }
+        },
+        error: (err) => console.error('Analiz hatası:', err)
+      });
   }
 
-  private handleAnalysisSuccess(data:any,operation:string):void{
+  private handleAnalysisSuccess(data: any, operation: string): void {
     this.mapService.drawResult(data.geometry);
     this.mapService.setAnalysisResult(data);
-    this.autoSave(data,operation);
+    this.autoSave(data, operation);
   }
-
 
   private autoSave(result: any, operation: string): void {
     const userId = this.authService.getUserId() ?? '';
     const userRole = this.authService.getUserRole();
     
-    if(!userId) return;
+    if (!userId) return;
     
     const savePayload = this.reService.prepareAnalysisPayload(
       result, this.selectedLocationNames, userId, userRole, operation
     );
 
     this.reService.saveRealEstate(savePayload)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe();
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
   }
 
   onSidebarLocationChanged(event: LocationInfo): void {

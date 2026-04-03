@@ -1,0 +1,23 @@
+/* Giriş yapıldıktan sonraki ana iskelet */
+.main-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Arka plan görselinin her zaman en altta sabit kalması için */
+app-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Gereksiz selector'ları temizledik */
+.main-layout {
+  display: none; 
+}
