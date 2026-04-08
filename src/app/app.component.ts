@@ -1,23 +1,34 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
-// 1. BackgroundComponent'in doğru yoldan import edildiğinden emin ol
 import { BackgroundComponent } from './shared/background/background.component'; 
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, BackgroundComponent], 
+  imports: [RouterOutlet, CommonModule, BackgroundComponent, SidebarComponent], 
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(private router: Router) {}
 
-  isAuthPage(): boolean {
-    const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-    const currentUrl = this.router.url;
-    
-    return authRoutes.some(route => currentUrl.includes(route)) || currentUrl === '/';
+  ngOnInit() {
+    // URL her değiştiğinde Angular'ın sayfayı yeniden kontrol etmesini sağlar
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.isAuthPage();
+    });
   }
+
+  isAuthPage(): boolean {
+  const currentUrl = this.router.url;
+
+  return currentUrl.includes('login') || 
+         currentUrl.includes('register') || 
+         currentUrl.includes('forgot-password');
+}
 }

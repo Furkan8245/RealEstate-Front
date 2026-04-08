@@ -35,15 +35,13 @@ export class MapInteractionService {
   }
 
   initMap(elementId: string): void {
-    const container=L.DomUtil.get(elementId);
-    if(!container) return;
-    if (this.map && (this.map as any)._container === container) {
-      setTimeout(() => this.map.invalidateSize(), 100);
-      return;
-    }
+    const container = L.DomUtil.get(elementId);
+    if (!container) return;
+
     if (this.map) {
       this.map.remove();
     }
+
     this.map = L.map(elementId).setView([39.9334, 32.8597], 13);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,11 +59,19 @@ export class MapInteractionService {
       this.updatePointsCount(this.drawnItems.getLayers().length);
     });
 
-    setTimeout(() => this.map.invalidateSize(), 200);
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 600);
   }
 
   applyLocationFilter(filter: LocationInfo | null): void {
     this.locationFilterSubject.next(filter);
+  }
+
+  executeAnalysis(operation: string): void {
+    this.analysisRequestSource.next(operation);
   }
 
   drawResult(geometry: any): void {
@@ -79,10 +85,6 @@ export class MapInteractionService {
 
     const bounds = this.resultLayer.getBounds();
     if (bounds.isValid()) this.map.fitBounds(bounds);
-  }
-
-  executeAnalysis(operation: string): void {
-    this.analysisRequestSource.next(operation);
   }
 
   resetMap(): void {

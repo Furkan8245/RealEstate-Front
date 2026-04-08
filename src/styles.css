@@ -32,3 +32,51 @@ body {
 .text-danger{
   color:var(--danger-color);
 }
+
+/* Anasayfayı daha keskin ve profesyonel göstermek için bazı temel stiller ekledim. Renk paletini sade ve modern tutarak, kullanıcıların dikkatini içeriğe çekmeye çalıştım. Ayrıca, yazı tipini ve satır yüksekliğini optimize ederek okunabilirliği artırdım. Bu temel stiller, uygulamanızın genel görünümünü iyileştirecek ve kullanıcı deneyimini geliştirecektir. */
+
+/* Beyaz alanı ve kaymaları yok eden temel kilit */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+}
+
+/* Sidebar ve Haritayı yan yana getiren profesyonel düzen */
+.dashboard-layout {
+  display: flex !important;
+  width: 100%;
+  height: 100vh;
+  gap: 20px; /* İstediğin 5mm boşluk */
+  background-color: var(--bg-color); /* Boşlukta görünecek renk */
+  padding: 0;
+}
+
+/* Sidebar Boyutu */
+.main-sidebar {
+  flex-shrink: 0; /* Sidebarın ezilmesini engeller */
+  width: 280px; /* Sidebar genişliğine göre ayarla */
+  height: 100vh;
+}
+
+/* Harita Alanı */
+.map-viewport {
+  flex: 1; /* Sidebar dışındaki tüm alanı kaplar */
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* Auth Ekranı Ortalaması */
+.auth-wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}

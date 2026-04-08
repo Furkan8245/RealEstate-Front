@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 export class MapUtils{
-    static cleanGeometry(geo:any){
+    static cleanGeometry(geo:any):any{
         if(!geo) return null;
         return{
             type:geo.type,

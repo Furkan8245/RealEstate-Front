@@ -66,7 +66,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private loadMenuByRole(): void {
     const userRole = this.authService.getUserRole();
     if (!userRole) {
-      this.filteredMenu= [];
+      this.filteredMenu = [];
       return;
     }
     this.filteredMenu = this.menuItems.filter(item => 
@@ -99,21 +99,37 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   executeAnalysis(): void {
-    if (this.pointsCount < 3) return alert("Eksik poligon!");
+    if (this.pointsCount < 3) {
+      alert("Eksik poligon!");
+      return;
+    }
+
+    if (!this.currentLocation.neighborhoodId || this.currentLocation.neighborhoodId === 0) {
+      alert("Lütfen analiz öncesi bir mahalle seçin.");
+      return;
+    }
+
     this.mapService.setAnalysisResult(this.selectedOperation);
   }
 
   resetMap(): void {
     this.mapService.resetMap();
+    this.analysisResult = null;
   }
 
   downloadExcel(): void {
-    if (!this.analysisResult) return alert("Önce analiz yapmalısınız.");
+    if (!this.analysisResult) {
+      alert("Önce analiz yapmalısınız.");
+      return;
+    }
     this.reportService.exportToExcel(this.analysisResult, "Alan_Analiz_Raporu");
   }
 
   async downloadPdf(): Promise<void> {
-    if (!this.analysisResult) return alert("Önce analiz yapmalısınız.");
+    if (!this.analysisResult) {
+      alert("Önce analiz yapmalısınız.");
+      return;
+    }
     try {
       const mapElement = document.getElementById("map");
       if (!mapElement) return;
@@ -130,7 +146,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       ]];
       this.reportService.exportToPdfWithImage(headers, rows, imageData, "Alan_Analiz_Raporu");
     } catch (error) {
-      console.error("PDF export error:",error);
+      console.error("PDF export error:", error);
       alert("PDF hatası oluştu.");
     }
   }

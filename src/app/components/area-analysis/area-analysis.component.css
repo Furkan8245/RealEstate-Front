@@ -1,26 +1,19 @@
 :host {
-  display: flex !important;
+  display: block;
   width: 100%;
   height: 100vh;
   position: absolute;
   top: 0;
   left: 0;
-  background: white; 
 }
 
-app-sidebar {
-  width: 250px;
-  height: 100vh;
-  flex-shrink: 0;
-}
-
-.main-content {
-  flex-grow: 1;
-  height: 100vh;
-  position: relative;
-}
+/* .analysis-wrapper {
+  width: 100%;
+  height: 100%;
+} */
 
 #map {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  border: none;
 }

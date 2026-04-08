@@ -1,4 +1,17 @@
-<app-background></app-background>
-<div [ngClass]="isAuthPage() ? 'auth-container' : 'main-wrapper'">
-  <router-outlet></router-outlet>
+<div class="app-container">
+  <ng-container *ngIf="!isAuthPage()">
+    <div class="dashboard-layout">
+      <app-sidebar class="main-sidebar"></app-sidebar> 
+      <main class="map-viewport">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isAuthPage()">
+    <app-background></app-background>
+    <div class="auth-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
 </div>
