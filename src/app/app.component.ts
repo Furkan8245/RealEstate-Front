@@ -1,34 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { BackgroundComponent } from './shared/background/background.component'; 
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { filter } from 'rxjs/operators';
+import { BackgroundComponent } from './shared/background/background.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, BackgroundComponent, SidebarComponent], 
+  imports: [RouterOutlet, CommonModule, SidebarComponent, BackgroundComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   constructor(private router: Router) {}
 
-  ngOnInit() {
-    // URL her değiştiğinde Angular'ın sayfayı yeniden kontrol etmesini sağlar
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      this.isAuthPage();
-    });
-  }
-
   isAuthPage(): boolean {
-  const currentUrl = this.router.url;
-
-  return currentUrl.includes('login') || 
-         currentUrl.includes('register') || 
-         currentUrl.includes('forgot-password');
-}
+    const url = this.router.url;
+    // URL login, register içeriyorsa veya bomboşsa (root) auth sayfasındayız demektir
+    return url.includes('login') || url.includes('register') || url === '/' || url === '';
+  }
 }

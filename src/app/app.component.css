@@ -1,46 +1,39 @@
-/* 1. Sayfanın en tepesindeki beyaz alanı ve kaymaları öldürür */
 :host {
   display: block;
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: hidden; 
 }
 
-/* 2. Ana taşıyıcı kap (Arka plan rengi boşluklarda görünür) */
 .app-container {
   width: 100%;
   height: 100%;
-  background-color: #1e1e1e; /* Sidebar ve Harita arasındaki boşluğun rengi */
+  background-color: #1e1e1e;
 }
 
-/* 3. Sidebar ve Haritayı yan yana getiren profesyonel flex yapısı */
 .dashboard-layout {
   display: flex;
   width: 100%;
   height: 100vh;
-  padding: 0;
-  /* Sidebar ile Harita arasında tam 5mm (yaklaşık 20px) boşluk bırakır */
   gap: 20px; 
 }
 
-/* 4. Haritanın içinde durduğu alan */
-.map-viewport {
-  flex: 1; /* Sidebar'dan kalan tüm alanı kaplar */
+.main-content {
+  flex: 1;
   height: 100vh;
   position: relative;
   overflow: hidden;
-  /* Harita köşelerini modern bir görünüm için hafif yuvarlatabilirsin */
-  border-radius: 15px 0 0 15px;
+  border-radius: 15px 0 0 15px; 
   background-color: #000;
 }
 
-/* 5. Giriş sayfası için ortalama */
-.auth-center-panel {
+
+.auth-layout {
+  position: relative;
+  z-index: 10; 
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
