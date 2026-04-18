@@ -37,20 +37,17 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initializeMap(): void {
-    setTimeout(() => {
-      const mapElement = document.getElementById('map');
-      if (mapElement && mapElement.offsetHeight > 0) {
-        this.mapService.initMap('map');
-        const map = this.mapService.getMapInstance();
-        if (map) {
-          map.invalidateSize();
-          setTimeout(() => map.invalidateSize(), 200);
-        }
-      } else {
-        setTimeout(() => this.initializeMap(), 300);
+  setTimeout(() => {
+    const mapElement = document.getElementById('map');
+    if (mapElement && mapElement.offsetHeight > 0) {
+      this.mapService.initMap('map');
+      const map = this.mapService.getMapInstance();
+      if (map) {
+        map.invalidateSize();
       }
-    }, 500);
-  }
+    }
+  }, 500);
+}
 
   private listenGlobalEvents(): void {
     this.mapService.drawEvent$
@@ -97,21 +94,23 @@ export class AreaAnalysisComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private prepareAnalysisPayload(operation: string) {
-    return {
-      geometryA: MapUtils.cleanGeometry(this.points[0]?.geometry),
-      geometryB: MapUtils.cleanGeometry(this.points[1]?.geometry),
-      geometryC: this.points[2] ? MapUtils.cleanGeometry(this.points[2].geometry) : null,
-      operationType: operation
-    };
-  }
+  return {
+    geometryA: MapUtils.cleanGeometry(this.points[0]?.geometry || {}),
+    geometryB: MapUtils.cleanGeometry(this.points[1]?.geometry || {}),
+    geometryC: this.points[2] ? MapUtils.cleanGeometry(this.points[2].geometry) : null,
+    operationType: operation
+  };
+}
 
   private handleAnalysisSuccess(data: any, operation: string): void {
-    if (data.geometry) {
-      this.mapService.drawResult(data.geometry);
-    }
-    this.mapService.setAnalysisResult(data);
-    this.autoSave(data, operation);
+  if (data.geometry) {
+    this.mapService.drawResult(data.geometry);
   }
+  this.mapService.setAnalysisResult(data);
+  setTimeout(() => {
+    this.autoSave(data, operation);
+  }, 300);
+}
 
   private autoSave(result: any, operation: string): void {
     const userId = this.authService.getUserId() ?? '';

@@ -24,7 +24,7 @@ export class AuthService {
     return this.httpClient.post<SingleResponseModel<TokenModel>>(this.apiUrl + 'login', loginModel);
   }
 
-  // 1. Şifre sıfırlama kodu isteme metodu
+  // 1. Şifre sıfırlama isteği metodu
   forgotPassword(email: string): Observable<ResponseModel> {
     return this.httpClient.post<any>(this.apiUrl + 'auth/forgot-password', { email: email });
   }

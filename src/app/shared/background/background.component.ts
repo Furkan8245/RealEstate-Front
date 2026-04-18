@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, HostListener, 
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import * as THREE from 'three';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-background',
@@ -17,15 +18,16 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
   private scene!: THREE.Scene;
   private particles!: THREE.Group;
   private world!: THREE.Group;
-  private bGeometry!: THREE.BufferGeometry;
   private animationId!: number;
-  
-  isAnimationActive: boolean = false;
+  private routerSub!: Subscription; // Hafıza sızıntısını önlemek için
+
+  isAnimationActive: boolean = true; // İlk açılışta aktif olsun
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.router.events.pipe(
+    // Router dinlemesini bir değişkene atıyoruz ki yok edebilelim
+    this.routerSub = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.isAnimationActive = event.urlAfterRedirects.includes('login') || event.urlAfterRedirects.includes('register');
@@ -41,15 +43,21 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
     const W = window.innerWidth;
     const H = window.innerHeight;
     const R = 200;
-    const fogC = '#722779'; // Daha siyah/mor derin arka plan
+    const fogC = '#1e1e2f'; // Daha optimize bir renk
 
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvasRef.nativeElement,
-      alpha: true,
-      antialias: true
-    });
-    this.renderer.setSize(W, H);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: this.canvasRef.nativeElement,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance" // GPU'ya öncelik ver
+      });
+      this.renderer.setSize(W, H);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performans için 2 ile sınırla
+    } catch (e) {
+      console.error("WebGL başlatılamadı:", e);
+      return;
+    }
 
     this.camera = new THREE.PerspectiveCamera(18, W / H, 1, 10000);
     this.camera.position.z = 1700;
@@ -58,60 +66,47 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
     this.scene.fog = new THREE.Fog(fogC, 1500, 2200);
 
     const loader = new THREE.TextureLoader();
-    const T_earth = 'https://mapplix.github.io/earth/earth.png';
-    const Emap = loader.load(T_earth);
-
     this.world = new THREE.Group();
     this.particles = new THREE.Group();
 
-    // Icosahedron Net (Ağ yapısı)
-    const geometry = new THREE.IcosahedronGeometry(R, 3);
-    this.bGeometry =geometry;
-    
-    const material = new THREE.MeshStandardMaterial({
+    // 1. Geometri ve Materyalleri değişkene alıyoruz ki DISPOSE edebilelim
+    const netGeo = new THREE.IcosahedronGeometry(R, 3);
+    const netMat = new THREE.MeshStandardMaterial({
       color: '#420236',
-      roughness: 0.5,
-      metalness: 0.9,
-      transparent: true,
-      opacity: 0.5,
       wireframe: true,
-      flatShading:true,
+      transparent: true,
+      opacity: 0.5
     });
+    const net = new THREE.Mesh(netGeo, netMat);
 
-    const net = new THREE.Mesh(this.bGeometry, material);
-    
-    // İç Dünya Küresi
-    const eMaterial = new THREE.MeshStandardMaterial({
-      map: Emap,
+    const earthGeo = new THREE.IcosahedronGeometry(R * 0.75, 3);
+    const earthMat = new THREE.MeshStandardMaterial({
       color: '#c5add1',
       emissive: '#211a29',
       metalness: 0.8
     });
-    const earth = new THREE.Mesh(new THREE.IcosahedronGeometry(R * 0.75, 3), eMaterial);
+    const earth = new THREE.Mesh(earthGeo, earthMat);
 
     this.particles.add(net, earth);
     this.world.add(this.particles);
     
     const hLight = new THREE.HemisphereLight('#9e7676', '#593d3d', 2);
     this.world.add(hLight);
-    
     this.scene.add(this.world);
   }
 
   private animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
     
-    if (this.isAnimationActive) {
+    if (this.isAnimationActive && this.renderer) {
       this.particles.rotation.y += 0.002;
-      this.particles.rotation.x += 0.000001;
       this.renderer.render(this.scene, this.camera);
-    } else {
-      this.renderer.clear();
     }
   }
 
   @HostListener('window:resize')
   onWindowResize() {
+    if (!this.camera || !this.renderer) return;
     const W = window.innerWidth;
     const H = window.innerHeight;
     this.camera.aspect = W / H;
@@ -120,7 +115,32 @@ export class BackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    cancelAnimationFrame(this.animationId);
-    this.renderer.dispose();
+    // 1. Animasyonu durdur
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+
+    // 2. Router aboneliğini bitir
+    if (this.routerSub) {
+      this.routerSub.unsubscribe();
+    }
+
+    // 3. GPU Temizliği (ASIL KRİTİK NOKTA)
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer.forceContextLoss(); // Tarayıcıya "işim bitti" de
+    }
+
+    // 4. Sahnedeki tüm objeleri, geometrileri ve materyalleri temizle
+    this.scene?.traverse((object: any) => {
+      if (object.geometry) object.geometry.dispose();
+      if (object.material) {
+        if (Array.isArray(object.material)) {
+          object.material.forEach((mat: any) => mat.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+    });
   }
 }
