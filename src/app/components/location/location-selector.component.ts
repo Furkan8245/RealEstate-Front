@@ -53,7 +53,7 @@ export class LocationSelectorComponent implements OnInit,OnDestroy {
   onDistrictChange():void {
     this.resetSelection('district');
     if(this.selectedCityId<=0) return;
-    this.locationService.getDistricts(this.selectedCityId)
+    this.locationService.getNeighborhoods(this.selectedDistrictId)
     .pipe(takeUntil(this.destroy$))
     .subscribe(data=>{
       this.neighborhoods=data;
